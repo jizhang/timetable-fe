@@ -1,17 +1,8 @@
-# Python
-*.egg-info
-__pycache__
-.ruff_cache
-.mypy_cache
-application.cfg
-timetable.log
+# JavaScript
+node_modules/
+dist/
+*.local
 
-# Database
-*.db
-backup
-
-# IDE
-.vscode
-
-# Mac
+# Misc
 .DS_Store
+.vscode/
