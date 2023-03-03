@@ -16,7 +16,7 @@ jobs:
           node-version: '18'
           cache: yarn
       - run: yarn install --frozen-lockfile
-      # - run: yarn lint:ci
+      - run: yarn lint:ci
 
   build:
     if: github.ref == 'refs/heads/master'

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import dayjs from 'dayjs'
 import debounce from 'just-debounce-it'
-import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { Modal } from 'bootstrap'
 import '@fullcalendar/core/vdom'
 import FullCalendar, { CalendarOptions } from '@fullcalendar/vue3'
@@ -14,10 +14,6 @@ import { commonApi, eventApi } from '@/api'
 import Note from '@/components/Note.vue'
 
 // Utilities
-function formatDate(date: Date) {
-  return dayjs(date).format('YYYY-MM-DD HH:mm:ss')
-}
-
 function calculateCalendarHeight() {
   return window.innerHeight - 50
 }
@@ -45,8 +41,8 @@ const options: CalendarOptions = {
   select({ start, end }) {
     Object.assign(eventForm, {
       ...defaultEventForm,
-      start: formatDate(start),
-      end: formatDate(end),
+      start,
+      end,
     })
     modal.show()
   },
@@ -88,7 +84,7 @@ onMounted(() => {
   // TODO Pinia
   eventApi.getEventCategories().then((response) => {
     categories.value = response.categories || []
-    calendarApi.addEventSource(({start, end}) => {
+    calendarApi.addEventSource(({ start, end }) => {
       return getEvents(start, end)
     })
   })
@@ -137,8 +133,8 @@ const defaultEventForm = {
   id: 0, // TODO number | null
   categoryId: 1,
   title: '',
-  start: '',
-  end: '',
+  start: new Date(),
+  end: new Date(),
 }
 
 const eventForm = reactive({
@@ -146,7 +142,7 @@ const eventForm = reactive({
 })
 
 function saveEvent() {
-  eventApi.saveEvent(eventForm).then((response) => {
+  eventApi.saveEvent({ event: eventForm }).then((response) => {
     // TODO Event form may change during request.
     if (!eventForm.id) {
       calendarApi.addEvent({
@@ -169,8 +165,8 @@ function updateEventForm(event: CalendarEvent) {
     id: event.id,
     categoryId: event.extendedProps.categoryId,
     title: event.title,
-    start: formatDate(event.start!),
-    end: formatDate(event.end!),
+    start: event.start!,
+    end: event.end!,
   })
 }
 

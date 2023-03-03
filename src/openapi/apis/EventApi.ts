@@ -18,6 +18,9 @@ import {
     Datetime,
     DatetimeFromJSON,
     DatetimeToJSON,
+    Event,
+    EventFromJSON,
+    EventToJSON,
     InlineResponse200,
     InlineResponse200FromJSON,
     InlineResponse200ToJSON,
@@ -39,11 +42,7 @@ export interface GetEventListRequest {
 }
 
 export interface SaveEventRequest {
-    start: Date;
-    title: string;
-    end: Date;
-    categoryId: number;
-    id?: number;
+    event: Event;
 }
 
 /**
@@ -160,66 +159,22 @@ export class EventApi extends runtime.BaseAPI {
      * Save event.
      */
     async saveEventRaw(requestParameters: SaveEventRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<InlineResponse2001>> {
-        if (requestParameters.start === null || requestParameters.start === undefined) {
-            throw new runtime.RequiredError('start','Required parameter requestParameters.start was null or undefined when calling saveEvent.');
-        }
-
-        if (requestParameters.title === null || requestParameters.title === undefined) {
-            throw new runtime.RequiredError('title','Required parameter requestParameters.title was null or undefined when calling saveEvent.');
-        }
-
-        if (requestParameters.end === null || requestParameters.end === undefined) {
-            throw new runtime.RequiredError('end','Required parameter requestParameters.end was null or undefined when calling saveEvent.');
-        }
-
-        if (requestParameters.categoryId === null || requestParameters.categoryId === undefined) {
-            throw new runtime.RequiredError('categoryId','Required parameter requestParameters.categoryId was null or undefined when calling saveEvent.');
+        if (requestParameters.event === null || requestParameters.event === undefined) {
+            throw new runtime.RequiredError('event','Required parameter requestParameters.event was null or undefined when calling saveEvent.');
         }
 
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const consumes: runtime.Consume[] = [
-            { contentType: 'application/x-www-form-urlencoded' },
-        ];
-        // @ts-ignore: canConsumeForm may be unused
-        const canConsumeForm = runtime.canConsumeForm(consumes);
-
-        let formParams: { append(param: string, value: any): any };
-        let useForm = false;
-        if (useForm) {
-            formParams = new FormData();
-        } else {
-            formParams = new URLSearchParams();
-        }
-
-        if (requestParameters.start !== undefined) {
-            formParams.append('start', requestParameters.start as any);
-        }
-
-        if (requestParameters.title !== undefined) {
-            formParams.append('title', requestParameters.title as any);
-        }
-
-        if (requestParameters.id !== undefined) {
-            formParams.append('id', requestParameters.id as any);
-        }
-
-        if (requestParameters.end !== undefined) {
-            formParams.append('end', requestParameters.end as any);
-        }
-
-        if (requestParameters.categoryId !== undefined) {
-            formParams.append('categoryId', requestParameters.categoryId as any);
-        }
+        headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
             path: `/api/event/save`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: formParams,
+            body: EventToJSON(requestParameters.event),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => InlineResponse2001FromJSON(jsonValue));

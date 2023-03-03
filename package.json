@@ -5,6 +5,7 @@
   "scripts": {
     "start": "vite",
     "start:local": "cross-env MOCK=none vite",
+    "lint:ci": "vue-tsc --noEmit",
     "checktype": "vue-tsc --noEmit",
     "build": "vite build",
     "preview": "vite preview",
