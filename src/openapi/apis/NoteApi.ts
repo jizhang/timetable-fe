@@ -14,11 +14,13 @@
 
 
 import * as runtime from '../runtime';
+import type {
+  Note,
+  NoteForm,
+} from '../models';
 import {
-    Note,
     NoteFromJSON,
     NoteToJSON,
-    NoteForm,
     NoteFormFromJSON,
     NoteFormToJSON,
 } from '../models';
@@ -35,7 +37,7 @@ export class NoteApi extends runtime.BaseAPI {
     /**
      * Get note content.
      */
-    async getNoteContentRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<NoteForm>> {
+    async getNoteContentRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<NoteForm>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -53,7 +55,7 @@ export class NoteApi extends runtime.BaseAPI {
     /**
      * Get note content.
      */
-    async getNoteContent(initOverrides?: RequestInit): Promise<NoteForm> {
+    async getNoteContent(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<NoteForm> {
         const response = await this.getNoteContentRaw(initOverrides);
         return await response.value();
     }
@@ -61,7 +63,7 @@ export class NoteApi extends runtime.BaseAPI {
     /**
      * Save note.
      */
-    async saveNoteRaw(requestParameters: SaveNoteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<Note>> {
+    async saveNoteRaw(requestParameters: SaveNoteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Note>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -98,7 +100,7 @@ export class NoteApi extends runtime.BaseAPI {
     /**
      * Save note.
      */
-    async saveNote(requestParameters: SaveNoteRequest = {}, initOverrides?: RequestInit): Promise<Note> {
+    async saveNote(requestParameters: SaveNoteRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Note> {
         const response = await this.saveNoteRaw(requestParameters, initOverrides);
         return await response.value();
     }

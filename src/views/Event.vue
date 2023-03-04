@@ -3,12 +3,10 @@ import dayjs from 'dayjs'
 import debounce from 'just-debounce-it'
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { Modal } from 'bootstrap'
-import '@fullcalendar/core/vdom'
-import FullCalendar, { CalendarOptions } from '@fullcalendar/vue3'
+import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { CalendarApi, type FormatterInput } from '@fullcalendar/core'
-import type { EventApi as CalendarEvent } from '@fullcalendar/core'
+import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi, EventSourceFuncArg } from '@fullcalendar/core'
 import type { Category } from '@/openapi'
 import { commonApi, eventApi } from '@/api'
 import Note from '@/components/Note.vue'
@@ -84,8 +82,8 @@ onMounted(() => {
   // TODO Pinia
   eventApi.getEventCategories().then((response) => {
     categories.value = response.categories || []
-    calendarApi.addEventSource(({ start, end }) => {
-      return getEvents(start, end)
+    calendarApi.addEventSource((args: EventSourceFuncArg) => {
+      return getEvents(args.start, args.end)
     })
   })
 
@@ -123,7 +121,7 @@ async function getEvents(start: Date, end: Date) {
 
 // Event
 let modal: Modal
-function saveModalRef(el: HTMLElement | null) {
+function saveModalRef(el: any) {
   if (el !== null) {
     modal = new Modal(el, { backdrop: 'static' })
   }
@@ -293,7 +291,7 @@ function updateCategoryDurations(events: CalendarEvent[]) {
   text-decoration: inherit;
 }
 
-.calendar .fc-timegrid-slot {
+.calendar .fc .fc-timegrid-slot {
   height: 30px;
 }
 
@@ -302,7 +300,7 @@ function updateCategoryDurations(events: CalendarEvent[]) {
   line-height: 100%;
 }
 
-.calendar .fc-event-title {
+.calendar .fc-v-event .fc-event-title {
   overflow: visible;
 }
 

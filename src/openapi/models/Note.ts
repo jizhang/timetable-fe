@@ -33,6 +33,15 @@ export interface Note {
     content?: string;
 }
 
+/**
+ * Check if a given object implements the Note interface.
+ */
+export function instanceOfNote(value: object): boolean {
+    let isInstance = true;
+
+    return isInstance;
+}
+
 export function NoteFromJSON(json: any): Note {
     return NoteFromJSONTyped(json, false);
 }

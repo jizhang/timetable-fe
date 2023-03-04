@@ -14,22 +14,21 @@
 
 
 import * as runtime from '../runtime';
+import type {
+  Event,
+  GetEventCategories200Response,
+  GetEventList200Response,
+  SaveEvent200Response,
+} from '../models';
 import {
-    Datetime,
-    DatetimeFromJSON,
-    DatetimeToJSON,
-    Event,
     EventFromJSON,
     EventToJSON,
-    InlineResponse200,
-    InlineResponse200FromJSON,
-    InlineResponse200ToJSON,
-    InlineResponse2001,
-    InlineResponse2001FromJSON,
-    InlineResponse2001ToJSON,
-    InlineResponse2002,
-    InlineResponse2002FromJSON,
-    InlineResponse2002ToJSON,
+    GetEventCategories200ResponseFromJSON,
+    GetEventCategories200ResponseToJSON,
+    GetEventList200ResponseFromJSON,
+    GetEventList200ResponseToJSON,
+    SaveEvent200ResponseFromJSON,
+    SaveEvent200ResponseToJSON,
 } from '../models';
 
 export interface DeleteEventRequest {
@@ -37,8 +36,8 @@ export interface DeleteEventRequest {
 }
 
 export interface GetEventListRequest {
-    start?: Datetime;
-    end?: Datetime;
+    start?: Date;
+    end?: Date;
 }
 
 export interface SaveEventRequest {
@@ -53,7 +52,7 @@ export class EventApi extends runtime.BaseAPI {
     /**
      * Delete event.
      */
-    async deleteEventRaw(requestParameters: DeleteEventRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<InlineResponse2001>> {
+    async deleteEventRaw(requestParameters: DeleteEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SaveEvent200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -84,13 +83,13 @@ export class EventApi extends runtime.BaseAPI {
             body: formParams,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => InlineResponse2001FromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SaveEvent200ResponseFromJSON(jsonValue));
     }
 
     /**
      * Delete event.
      */
-    async deleteEvent(requestParameters: DeleteEventRequest = {}, initOverrides?: RequestInit): Promise<InlineResponse2001> {
+    async deleteEvent(requestParameters: DeleteEventRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SaveEvent200Response> {
         const response = await this.deleteEventRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -98,7 +97,7 @@ export class EventApi extends runtime.BaseAPI {
     /**
      * Get event categories.
      */
-    async getEventCategoriesRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<InlineResponse200>> {
+    async getEventCategoriesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetEventCategories200Response>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -110,13 +109,13 @@ export class EventApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => InlineResponse200FromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetEventCategories200ResponseFromJSON(jsonValue));
     }
 
     /**
      * Get event categories.
      */
-    async getEventCategories(initOverrides?: RequestInit): Promise<InlineResponse200> {
+    async getEventCategories(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetEventCategories200Response> {
         const response = await this.getEventCategoriesRaw(initOverrides);
         return await response.value();
     }
@@ -124,15 +123,15 @@ export class EventApi extends runtime.BaseAPI {
     /**
      * Get event list.
      */
-    async getEventListRaw(requestParameters: GetEventListRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<InlineResponse2002>> {
+    async getEventListRaw(requestParameters: GetEventListRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetEventList200Response>> {
         const queryParameters: any = {};
 
         if (requestParameters.start !== undefined) {
-            queryParameters['start'] = requestParameters.start;
+            queryParameters['start'] = (requestParameters.start as any).toISOString();
         }
 
         if (requestParameters.end !== undefined) {
-            queryParameters['end'] = requestParameters.end;
+            queryParameters['end'] = (requestParameters.end as any).toISOString();
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -144,13 +143,13 @@ export class EventApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => InlineResponse2002FromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetEventList200ResponseFromJSON(jsonValue));
     }
 
     /**
      * Get event list.
      */
-    async getEventList(requestParameters: GetEventListRequest = {}, initOverrides?: RequestInit): Promise<InlineResponse2002> {
+    async getEventList(requestParameters: GetEventListRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetEventList200Response> {
         const response = await this.getEventListRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -158,7 +157,7 @@ export class EventApi extends runtime.BaseAPI {
     /**
      * Save event.
      */
-    async saveEventRaw(requestParameters: SaveEventRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<InlineResponse2001>> {
+    async saveEventRaw(requestParameters: SaveEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SaveEvent200Response>> {
         if (requestParameters.event === null || requestParameters.event === undefined) {
             throw new runtime.RequiredError('event','Required parameter requestParameters.event was null or undefined when calling saveEvent.');
         }
@@ -177,13 +176,13 @@ export class EventApi extends runtime.BaseAPI {
             body: EventToJSON(requestParameters.event),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => InlineResponse2001FromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => SaveEvent200ResponseFromJSON(jsonValue));
     }
 
     /**
      * Save event.
      */
-    async saveEvent(requestParameters: SaveEventRequest, initOverrides?: RequestInit): Promise<InlineResponse2001> {
+    async saveEvent(requestParameters: SaveEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SaveEvent200Response> {
         const response = await this.saveEventRaw(requestParameters, initOverrides);
         return await response.value();
     }

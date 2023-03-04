@@ -24,7 +24,7 @@ export interface Category {
      * @type {string}
      * @memberof Category
      */
-    title?: string;
+    color?: string;
     /**
      * 
      * @type {number}
@@ -36,7 +36,16 @@ export interface Category {
      * @type {string}
      * @memberof Category
      */
-    color?: string;
+    title?: string;
+}
+
+/**
+ * Check if a given object implements the Category interface.
+ */
+export function instanceOfCategory(value: object): boolean {
+    let isInstance = true;
+
+    return isInstance;
 }
 
 export function CategoryFromJSON(json: any): Category {
@@ -49,9 +58,9 @@ export function CategoryFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     }
     return {
         
-        'title': !exists(json, 'title') ? undefined : json['title'],
-        'id': !exists(json, 'id') ? undefined : json['id'],
         'color': !exists(json, 'color') ? undefined : json['color'],
+        'id': !exists(json, 'id') ? undefined : json['id'],
+        'title': !exists(json, 'title') ? undefined : json['title'],
     };
 }
 
@@ -64,9 +73,9 @@ export function CategoryToJSON(value?: Category | null): any {
     }
     return {
         
-        'title': value.title,
-        'id': value.id,
         'color': value.color,
+        'id': value.id,
+        'title': value.title,
     };
 }
 
