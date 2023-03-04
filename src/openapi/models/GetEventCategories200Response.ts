@@ -13,8 +13,8 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import type { Category } from './Category';
 import {
-    Category,
     CategoryFromJSON,
     CategoryFromJSONTyped,
     CategoryToJSON,
@@ -23,22 +23,31 @@ import {
 /**
  * 
  * @export
- * @interface InlineResponse200
+ * @interface GetEventCategories200Response
  */
-export interface InlineResponse200 {
+export interface GetEventCategories200Response {
     /**
      * 
      * @type {Array<Category>}
-     * @memberof InlineResponse200
+     * @memberof GetEventCategories200Response
      */
     categories?: Array<Category>;
 }
 
-export function InlineResponse200FromJSON(json: any): InlineResponse200 {
-    return InlineResponse200FromJSONTyped(json, false);
+/**
+ * Check if a given object implements the GetEventCategories200Response interface.
+ */
+export function instanceOfGetEventCategories200Response(value: object): boolean {
+    let isInstance = true;
+
+    return isInstance;
 }
 
-export function InlineResponse200FromJSONTyped(json: any, ignoreDiscriminator: boolean): InlineResponse200 {
+export function GetEventCategories200ResponseFromJSON(json: any): GetEventCategories200Response {
+    return GetEventCategories200ResponseFromJSONTyped(json, false);
+}
+
+export function GetEventCategories200ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): GetEventCategories200Response {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -48,7 +57,7 @@ export function InlineResponse200FromJSONTyped(json: any, ignoreDiscriminator: b
     };
 }
 
-export function InlineResponse200ToJSON(value?: InlineResponse200 | null): any {
+export function GetEventCategories200ResponseToJSON(value?: GetEventCategories200Response | null): any {
     if (value === undefined) {
         return undefined;
     }

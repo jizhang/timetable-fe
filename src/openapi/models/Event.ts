@@ -21,12 +21,6 @@ import { exists, mapValues } from '../runtime';
 export interface Event {
     /**
      * 
-     * @type {number}
-     * @memberof Event
-     */
-    id?: number;
-    /**
-     * 
      * @type {Date}
      * @memberof Event
      */
@@ -36,7 +30,13 @@ export interface Event {
      * @type {number}
      * @memberof Event
      */
-    categoryId: number;
+    id?: number;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Event
+     */
+    start: Date;
     /**
      * 
      * @type {string}
@@ -45,10 +45,23 @@ export interface Event {
     title: string;
     /**
      * 
-     * @type {Date}
+     * @type {number}
      * @memberof Event
      */
-    start: Date;
+    categoryId: number;
+}
+
+/**
+ * Check if a given object implements the Event interface.
+ */
+export function instanceOfEvent(value: object): boolean {
+    let isInstance = true;
+    isInstance = isInstance && "end" in value;
+    isInstance = isInstance && "start" in value;
+    isInstance = isInstance && "title" in value;
+    isInstance = isInstance && "categoryId" in value;
+
+    return isInstance;
 }
 
 export function EventFromJSON(json: any): Event {
@@ -61,11 +74,11 @@ export function EventFromJSONTyped(json: any, ignoreDiscriminator: boolean): Eve
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
         'end': (new Date(json['end'])),
-        'categoryId': json['categoryId'],
-        'title': json['title'],
+        'id': !exists(json, 'id') ? undefined : json['id'],
         'start': (new Date(json['start'])),
+        'title': json['title'],
+        'categoryId': json['categoryId'],
     };
 }
 
@@ -78,11 +91,11 @@ export function EventToJSON(value?: Event | null): any {
     }
     return {
         
-        'id': value.id,
         'end': (value.end.toISOString()),
-        'categoryId': value.categoryId,
-        'title': value.title,
+        'id': value.id,
         'start': (value.start.toISOString()),
+        'title': value.title,
+        'categoryId': value.categoryId,
     };
 }
 

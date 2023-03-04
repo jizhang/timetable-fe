@@ -16,22 +16,31 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface InlineResponse2001
+ * @interface SaveEvent200Response
  */
-export interface InlineResponse2001 {
+export interface SaveEvent200Response {
     /**
      * 
      * @type {number}
-     * @memberof InlineResponse2001
+     * @memberof SaveEvent200Response
      */
     id?: number;
 }
 
-export function InlineResponse2001FromJSON(json: any): InlineResponse2001 {
-    return InlineResponse2001FromJSONTyped(json, false);
+/**
+ * Check if a given object implements the SaveEvent200Response interface.
+ */
+export function instanceOfSaveEvent200Response(value: object): boolean {
+    let isInstance = true;
+
+    return isInstance;
 }
 
-export function InlineResponse2001FromJSONTyped(json: any, ignoreDiscriminator: boolean): InlineResponse2001 {
+export function SaveEvent200ResponseFromJSON(json: any): SaveEvent200Response {
+    return SaveEvent200ResponseFromJSONTyped(json, false);
+}
+
+export function SaveEvent200ResponseFromJSONTyped(json: any, ignoreDiscriminator: boolean): SaveEvent200Response {
     if ((json === undefined) || (json === null)) {
         return json;
     }
@@ -41,7 +50,7 @@ export function InlineResponse2001FromJSONTyped(json: any, ignoreDiscriminator: 
     };
 }
 
-export function InlineResponse2001ToJSON(value?: InlineResponse2001 | null): any {
+export function SaveEvent200ResponseToJSON(value?: SaveEvent200Response | null): any {
     if (value === undefined) {
         return undefined;
     }

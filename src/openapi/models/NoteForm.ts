@@ -27,6 +27,15 @@ export interface NoteForm {
     content?: string;
 }
 
+/**
+ * Check if a given object implements the NoteForm interface.
+ */
+export function instanceOfNoteForm(value: object): boolean {
+    let isInstance = true;
+
+    return isInstance;
+}
+
 export function NoteFormFromJSON(json: any): NoteForm {
     return NoteFormFromJSONTyped(json, false);
 }

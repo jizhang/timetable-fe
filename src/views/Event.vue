@@ -121,7 +121,7 @@ async function getEvents(start: Date, end: Date) {
 
 // Event
 let modal: Modal
-function saveModalRef(el: HTMLElement | null) {
+function saveModalRef(el: any) {
   if (el !== null) {
     modal = new Modal(el, { backdrop: 'static' })
   }
