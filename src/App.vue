@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import 'bootstrap/dist/css/bootstrap.min.css'
-import Event from '@/views/Event.vue'
 </script>
 
 <template>
-  <Event />
+  <router-view />
 </template>
 
 <style>
