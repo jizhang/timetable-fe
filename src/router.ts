@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Event from '@/views/Event.vue'
 import Login from '@/views/Login.vue'
-import { routerHolder } from '@/utils'
+import { routerHolder } from '@/common/utils'
 
 const routes = [
   { path: '/', component: Event },

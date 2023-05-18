@@ -7,7 +7,7 @@ import {
   EventApi,
   NoteApi,
 } from '@/openapi'
-import { routerHolder } from '@/utils'
+import { routerHolder } from '@/common/utils'
 
 class UnauthorizedMiddleware implements Middleware {
   async post(context: ResponseContext) {

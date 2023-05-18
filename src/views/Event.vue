@@ -8,7 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi, EventSourceFuncArg } from '@fullcalendar/core'
 import type { Category } from '@/openapi'
-import { commonApi, eventApi } from '@/api'
+import { commonApi, eventApi } from '@/common/api'
 import Note from '@/components/Note.vue'
 
 // Utilities

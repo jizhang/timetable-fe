@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { userApi } from '@/api'
+import { userApi } from '@/common/api'
 
 const router = useRouter()
 
