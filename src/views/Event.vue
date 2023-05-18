@@ -178,8 +178,10 @@ function handleDeleteEvent() {
   }
 }
 
+let pingHandler: NodeJS.Timer
+
 onMounted(() => {
-  const pingHandler = setInterval(() => {
+  pingHandler = setInterval(() => {
     commonApi.ping().catch(() => {
       clearInterval(pingHandler)
       if (confirm('Ping error, reload?')) {
@@ -187,6 +189,10 @@ onMounted(() => {
       }
     })
   }, 30_000)
+})
+
+onUnmounted(() => {
+  clearInterval(pingHandler)
 })
 
 const categoryDurations = ref<{

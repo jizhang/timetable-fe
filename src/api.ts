@@ -7,12 +7,23 @@ import {
   EventApi,
   NoteApi,
 } from '@/openapi'
-import router from '@/router'
+import { routerHolder } from '@/utils'
 
 class UnauthorizedMiddleware implements Middleware {
   async post(context: ResponseContext) {
-    if (context.response.status === 401) {
-      router.push('/login')
+    const { response } = context
+
+    if (response.status === 400) {
+      const payload = await response.json()
+      if (payload.code === 400) {
+        alert(payload.message)
+      }
+      return
+    }
+
+    if (response.status === 401) {
+      routerHolder.router!.push('/login')
+      return
     }
   }
 }
