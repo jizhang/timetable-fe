@@ -5,8 +5,8 @@
   "scripts": {
     "start": "vite",
     "start:local": "cross-env MOCK=none vite",
+    "lint": "vue-tsc --noEmit",
     "lint:ci": "vue-tsc --noEmit",
-    "checktype": "vue-tsc --noEmit",
     "build": "vite build",
     "preview": "vite preview",
     "gen": "openapi-generator-cli generate"
@@ -20,11 +20,14 @@
     "bootstrap": "^5.1.3",
     "dayjs": "^1.11.2",
     "just-debounce-it": "^3.0.1",
-    "vue": "^3.2.47"
+    "lodash": "^4.17.21",
+    "vue": "^3.2.47",
+    "vue-router": "^4.2.0"
   },
   "devDependencies": {
     "@openapitools/openapi-generator-cli": "^2.5.1",
     "@types/bootstrap": "^5.1.12",
+    "@types/lodash": "^4.14.194",
     "@types/node": "^18.11.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "cross-env": "^7.0.3",

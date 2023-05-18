@@ -2,7 +2,7 @@
 import debounce from 'just-debounce-it'
 import { ref, reactive, onMounted } from 'vue'
 import dayjs from 'dayjs'
-import { noteApi } from '@/api'
+import { noteApi } from '@/common/api'
 
 const isLoading = ref(false)
 const created = ref('')

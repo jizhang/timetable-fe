@@ -16,55 +16,48 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Category
+ * @interface CurrentUser
  */
-export interface Category {
-    /**
-     * 
-     * @type {string}
-     * @memberof Category
-     */
-    title?: string;
+export interface CurrentUser {
     /**
      * 
      * @type {number}
-     * @memberof Category
+     * @memberof CurrentUser
      */
     id?: number;
     /**
      * 
      * @type {string}
-     * @memberof Category
+     * @memberof CurrentUser
      */
-    color?: string;
+    username?: string;
 }
 
 /**
- * Check if a given object implements the Category interface.
+ * Check if a given object implements the CurrentUser interface.
  */
-export function instanceOfCategory(value: object): boolean {
+export function instanceOfCurrentUser(value: object): boolean {
     let isInstance = true;
 
     return isInstance;
 }
 
-export function CategoryFromJSON(json: any): Category {
-    return CategoryFromJSONTyped(json, false);
+export function CurrentUserFromJSON(json: any): CurrentUser {
+    return CurrentUserFromJSONTyped(json, false);
 }
 
-export function CategoryFromJSONTyped(json: any, ignoreDiscriminator: boolean): Category {
+export function CurrentUserFromJSONTyped(json: any, ignoreDiscriminator: boolean): CurrentUser {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'title': !exists(json, 'title') ? undefined : json['title'],
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'color': !exists(json, 'color') ? undefined : json['color'],
+        'username': !exists(json, 'username') ? undefined : json['username'],
     };
 }
 
-export function CategoryToJSON(value?: Category | null): any {
+export function CurrentUserToJSON(value?: CurrentUser | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -73,9 +66,8 @@ export function CategoryToJSON(value?: Category | null): any {
     }
     return {
         
-        'title': value.title,
         'id': value.id,
-        'color': value.color,
+        'username': value.username,
     };
 }
 

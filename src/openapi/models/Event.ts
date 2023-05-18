@@ -21,16 +21,16 @@ import { exists, mapValues } from '../runtime';
 export interface Event {
     /**
      * 
-     * @type {Date}
-     * @memberof Event
-     */
-    end: Date;
-    /**
-     * 
      * @type {number}
      * @memberof Event
      */
     id?: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof Event
+     */
+    title: string;
     /**
      * 
      * @type {Date}
@@ -39,10 +39,10 @@ export interface Event {
     start: Date;
     /**
      * 
-     * @type {string}
+     * @type {Date}
      * @memberof Event
      */
-    title: string;
+    end: Date;
     /**
      * 
      * @type {number}
@@ -56,9 +56,9 @@ export interface Event {
  */
 export function instanceOfEvent(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "end" in value;
-    isInstance = isInstance && "start" in value;
     isInstance = isInstance && "title" in value;
+    isInstance = isInstance && "start" in value;
+    isInstance = isInstance && "end" in value;
     isInstance = isInstance && "categoryId" in value;
 
     return isInstance;
@@ -74,10 +74,10 @@ export function EventFromJSONTyped(json: any, ignoreDiscriminator: boolean): Eve
     }
     return {
         
-        'end': (new Date(json['end'])),
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'start': (new Date(json['start'])),
         'title': json['title'],
+        'start': (new Date(json['start'])),
+        'end': (new Date(json['end'])),
         'categoryId': json['categoryId'],
     };
 }
@@ -91,10 +91,10 @@ export function EventToJSON(value?: Event | null): any {
     }
     return {
         
-        'end': (value.end.toISOString()),
         'id': value.id,
-        'start': (value.start.toISOString()),
         'title': value.title,
+        'start': (value.start.toISOString()),
+        'end': (value.end.toISOString()),
         'categoryId': value.categoryId,
     };
 }

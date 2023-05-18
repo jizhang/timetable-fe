@@ -8,7 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi, EventSourceFuncArg } from '@fullcalendar/core'
 import type { Category } from '@/openapi'
-import { commonApi, eventApi } from '@/api'
+import { commonApi, eventApi } from '@/common/api'
 import Note from '@/components/Note.vue'
 
 // Utilities
@@ -178,8 +178,10 @@ function handleDeleteEvent() {
   }
 }
 
+let pingHandler: NodeJS.Timer
+
 onMounted(() => {
-  const pingHandler = setInterval(() => {
+  pingHandler = setInterval(() => {
     commonApi.ping().catch(() => {
       clearInterval(pingHandler)
       if (confirm('Ping error, reload?')) {
@@ -187,6 +189,10 @@ onMounted(() => {
       }
     })
   }, 30_000)
+})
+
+onUnmounted(() => {
+  clearInterval(pingHandler)
 })
 
 const categoryDurations = ref<{
