@@ -8,7 +8,7 @@
     },
     "generators": {
       "v1": {
-        "inputSpec": "../timetable/openapi.yaml",
+        "inputSpec": "../timetable-server/openapi.yaml",
         "generatorName": "typescript-fetch",
         "output": "src/openapi"
       }
