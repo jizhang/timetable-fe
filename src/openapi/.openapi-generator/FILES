@@ -7,6 +7,7 @@ index.ts
 models/Category.ts
 models/CurrentUser.ts
 models/Event.ts
+models/EventId.ts
 models/GetEventCategories200Response.ts
 models/GetEventList200Response.ts
 models/LoginForm.ts

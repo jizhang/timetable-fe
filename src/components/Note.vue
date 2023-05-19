@@ -6,13 +6,13 @@ import { noteApi } from '@/common/api'
 
 const isLoading = ref(false)
 const created = ref('')
-const form = reactive({
+const noteForm = reactive({
   content: '',
 })
 
 onMounted(() => {
   noteApi.getNoteContent().then((response) => {
-    form.content = response.content || ''
+    noteForm.content = response.content || ''
   })
 })
 
@@ -22,7 +22,7 @@ function handleSubmit(event: Event) {
 }
 
 function saveNote() {
-  noteApi.saveNote(form).then((response) => {
+  noteApi.saveNote({ noteForm }).then((response) => {
     created.value = dayjs(response.created).format('YYYY-MM-DD HH:mm:ss')
   })
 }
@@ -33,7 +33,7 @@ const handleChangeContent = debounce(saveNote, 5000)
 <template>
   <form @submit="handleSubmit">
     <div class="title">Note</div>
-    <textarea class="content font-monospace lh-sm" v-model="form.content" @input="handleChangeContent"></textarea>
+    <textarea class="content font-monospace lh-sm" v-model="noteForm.content" @input="handleChangeContent"></textarea>
     <div>
       <button type="submit" class="btn btn-primary btn-sm" :disabled="isLoading">Save</button>
     </div>

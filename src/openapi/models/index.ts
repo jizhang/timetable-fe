@@ -3,6 +3,7 @@
 export * from './Category';
 export * from './CurrentUser';
 export * from './Event';
+export * from './EventId';
 export * from './GetEventCategories200Response';
 export * from './GetEventList200Response';
 export * from './LoginForm';

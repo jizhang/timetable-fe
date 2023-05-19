@@ -36,12 +36,6 @@ export interface Event {
      * @type {Date}
      * @memberof Event
      */
-    start: Date;
-    /**
-     * 
-     * @type {Date}
-     * @memberof Event
-     */
     end: Date;
     /**
      * 
@@ -49,6 +43,12 @@ export interface Event {
      * @memberof Event
      */
     categoryId: number;
+    /**
+     * 
+     * @type {Date}
+     * @memberof Event
+     */
+    start: Date;
 }
 
 /**
@@ -57,9 +57,9 @@ export interface Event {
 export function instanceOfEvent(value: object): boolean {
     let isInstance = true;
     isInstance = isInstance && "title" in value;
-    isInstance = isInstance && "start" in value;
     isInstance = isInstance && "end" in value;
     isInstance = isInstance && "categoryId" in value;
+    isInstance = isInstance && "start" in value;
 
     return isInstance;
 }
@@ -76,9 +76,9 @@ export function EventFromJSONTyped(json: any, ignoreDiscriminator: boolean): Eve
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'title': json['title'],
-        'start': (new Date(json['start'])),
         'end': (new Date(json['end'])),
         'categoryId': json['categoryId'],
+        'start': (new Date(json['start'])),
     };
 }
 
@@ -93,9 +93,9 @@ export function EventToJSON(value?: Event | null): any {
         
         'id': value.id,
         'title': value.title,
-        'start': (value.start.toISOString()),
         'end': (value.end.toISOString()),
         'categoryId': value.categoryId,
+        'start': (value.start.toISOString()),
     };
 }
 

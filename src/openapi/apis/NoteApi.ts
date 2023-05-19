@@ -26,7 +26,7 @@ import {
 } from '../models';
 
 export interface SaveNoteRequest {
-    content?: string;
+    noteForm: NoteForm;
 }
 
 /**
@@ -64,34 +64,22 @@ export class NoteApi extends runtime.BaseAPI {
      * Save note.
      */
     async saveNoteRaw(requestParameters: SaveNoteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Note>> {
+        if (requestParameters.noteForm === null || requestParameters.noteForm === undefined) {
+            throw new runtime.RequiredError('noteForm','Required parameter requestParameters.noteForm was null or undefined when calling saveNote.');
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const consumes: runtime.Consume[] = [
-            { contentType: 'application/x-www-form-urlencoded' },
-        ];
-        // @ts-ignore: canConsumeForm may be unused
-        const canConsumeForm = runtime.canConsumeForm(consumes);
-
-        let formParams: { append(param: string, value: any): any };
-        let useForm = false;
-        if (useForm) {
-            formParams = new FormData();
-        } else {
-            formParams = new URLSearchParams();
-        }
-
-        if (requestParameters.content !== undefined) {
-            formParams.append('content', requestParameters.content as any);
-        }
+        headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
             path: `/api/note/save`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: formParams,
+            body: NoteFormToJSON(requestParameters.noteForm),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => NoteFromJSON(jsonValue));
@@ -100,7 +88,7 @@ export class NoteApi extends runtime.BaseAPI {
     /**
      * Save note.
      */
-    async saveNote(requestParameters: SaveNoteRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Note> {
+    async saveNote(requestParameters: SaveNoteRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Note> {
         const response = await this.saveNoteRaw(requestParameters, initOverrides);
         return await response.value();
     }

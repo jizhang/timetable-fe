@@ -170,7 +170,8 @@ function updateEventForm(event: CalendarEvent) {
 
 function handleDeleteEvent() {
   if (confirm('Are you sure?')) {
-    eventApi.deleteEvent({ id: eventForm.id }).then(() => {
+    const eventId = { id: eventForm.id }
+    eventApi.deleteEvent({ eventId }).then(() => {
       const event = calendarApi.getEventById(String(eventForm.id)) // TODO Use response.id
       event?.remove()
       modal.hide()

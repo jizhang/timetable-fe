@@ -16,6 +16,7 @@
 import * as runtime from '../runtime';
 import type {
   Event,
+  EventId,
   GetEventCategories200Response,
   GetEventList200Response,
   SaveEvent200Response,
@@ -23,6 +24,8 @@ import type {
 import {
     EventFromJSON,
     EventToJSON,
+    EventIdFromJSON,
+    EventIdToJSON,
     GetEventCategories200ResponseFromJSON,
     GetEventCategories200ResponseToJSON,
     GetEventList200ResponseFromJSON,
@@ -32,7 +35,7 @@ import {
 } from '../models';
 
 export interface DeleteEventRequest {
-    id?: number;
+    eventId: EventId;
 }
 
 export interface GetEventListRequest {
@@ -53,34 +56,22 @@ export class EventApi extends runtime.BaseAPI {
      * Delete event.
      */
     async deleteEventRaw(requestParameters: DeleteEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<SaveEvent200Response>> {
+        if (requestParameters.eventId === null || requestParameters.eventId === undefined) {
+            throw new runtime.RequiredError('eventId','Required parameter requestParameters.eventId was null or undefined when calling deleteEvent.');
+        }
+
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
 
-        const consumes: runtime.Consume[] = [
-            { contentType: 'application/x-www-form-urlencoded' },
-        ];
-        // @ts-ignore: canConsumeForm may be unused
-        const canConsumeForm = runtime.canConsumeForm(consumes);
-
-        let formParams: { append(param: string, value: any): any };
-        let useForm = false;
-        if (useForm) {
-            formParams = new FormData();
-        } else {
-            formParams = new URLSearchParams();
-        }
-
-        if (requestParameters.id !== undefined) {
-            formParams.append('id', requestParameters.id as any);
-        }
+        headerParameters['Content-Type'] = 'application/json';
 
         const response = await this.request({
             path: `/api/event/delete`,
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: formParams,
+            body: EventIdToJSON(requestParameters.eventId),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => SaveEvent200ResponseFromJSON(jsonValue));
@@ -89,7 +80,7 @@ export class EventApi extends runtime.BaseAPI {
     /**
      * Delete event.
      */
-    async deleteEvent(requestParameters: DeleteEventRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SaveEvent200Response> {
+    async deleteEvent(requestParameters: DeleteEventRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<SaveEvent200Response> {
         const response = await this.deleteEventRaw(requestParameters, initOverrides);
         return await response.value();
     }
