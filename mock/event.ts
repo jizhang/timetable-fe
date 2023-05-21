@@ -44,9 +44,9 @@ function saveEvent() {
   }
 }
 
-function deleteEvent() {
+function deleteEvent({ body }) {
   return {
-    id: randomInt(),
+    id: parseInt(body.id),
   }
 }
 

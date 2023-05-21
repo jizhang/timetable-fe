@@ -124,7 +124,7 @@ async function getEvents(start: Date, end: Date) {
 const modalVisible = ref(false)
 
 const defaultEventForm = {
-  id: 0, // TODO number | null
+  id: 0,
   categoryId: 1,
   title: '',
   start: new Date(),
@@ -167,8 +167,8 @@ function updateEventForm(event: CalendarEvent) {
 function handleDeleteEvent() {
   if (confirm('Are you sure?')) {
     const eventId = { id: eventForm.id }
-    eventApi.deleteEvent({ eventId }).then(() => {
-      const event = calendarApi.getEventById(String(eventForm.id)) // TODO Use response.id
+    eventApi.deleteEvent({ eventId }).then(payload => {
+      const event = calendarApi.getEventById(String(payload.id))
       event?.remove()
       modalVisible.value = false
     })
