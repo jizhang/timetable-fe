@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import _ from 'lodash'
 import dayjs from 'dayjs'
 import debounce from 'just-debounce-it'
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -135,19 +136,19 @@ const eventForm = reactive({
 })
 
 function saveEvent() {
-  eventApi.saveEvent({ event: eventForm }).then((response) => {
-    // TODO Event form may change during request.
-    if (!eventForm.id) {
+  const event = _.clone(eventForm)
+  eventApi.saveEvent({ event }).then((response) => {
+    if (!event.id) {
       calendarApi.addEvent({
-        ...eventForm,
+        ...event,
         id: String(response.id),
-        color: getCategoryColor(eventForm.categoryId),
+        color: getCategoryColor(event.categoryId),
       }, true)
     } else {
-      const event = calendarApi.getEventById(String(eventForm.id))
-      event?.setProp('title', eventForm.title)
-      event?.setProp('color', getCategoryColor(eventForm.categoryId))
-      event?.setExtendedProp('categoryId', eventForm.categoryId)
+      const calEvent = calendarApi.getEventById(String(event.id))
+      calEvent?.setProp('title', event.title)
+      calEvent?.setProp('color', getCategoryColor(event.categoryId))
+      calEvent?.setExtendedProp('categoryId', event.categoryId)
     }
     modalVisible.value = false
   })
