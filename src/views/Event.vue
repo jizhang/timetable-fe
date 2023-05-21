@@ -2,13 +2,13 @@
 import dayjs from 'dayjs'
 import debounce from 'just-debounce-it'
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { Modal } from 'bootstrap'
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi, EventSourceFuncArg } from '@fullcalendar/core'
 import type { Category } from '@/openapi'
 import { commonApi, eventApi } from '@/common/api'
+import Modal from '@/components/Modal.vue'
 import Note from '@/components/Note.vue'
 
 // Utilities
@@ -42,12 +42,12 @@ const options: CalendarOptions = {
       start,
       end,
     })
-    modal.show()
+    modalVisible.value = true
   },
 
   eventClick({ event }) {
     updateEventForm(event)
-    modal.show()
+    modalVisible.value = true
   },
 
   eventDrop({ event }) {
@@ -120,12 +120,7 @@ async function getEvents(start: Date, end: Date) {
 }
 
 // Event
-let modal: Modal
-function saveModalRef(el: any) {
-  if (el !== null) {
-    modal = new Modal(el, { backdrop: 'static' })
-  }
-}
+const modalVisible = ref(false)
 
 const defaultEventForm = {
   id: 0, // TODO number | null
@@ -154,7 +149,7 @@ function saveEvent() {
       event?.setProp('color', getCategoryColor(eventForm.categoryId))
       event?.setExtendedProp('categoryId', eventForm.categoryId)
     }
-    modal.hide()
+    modalVisible.value = false
   })
 }
 
@@ -174,7 +169,7 @@ function handleDeleteEvent() {
     eventApi.deleteEvent({ eventId }).then(() => {
       const event = calendarApi.getEventById(String(eventForm.id)) // TODO Use response.id
       event?.remove()
-      modal.hide()
+      modalVisible.value = false
     })
   }
 }
@@ -254,37 +249,28 @@ function updateCategoryDurations(events: CalendarEvent[]) {
       </div>
     </div>
 
-    <div class="modal" :ref="saveModalRef">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ eventForm.id ? 'Edit' : 'New' }} Event</h5>
-          </div>
-          <div class="modal-body">
-            <form>
-              <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Category:</label>
-                <div class="col-sm-10">
-                  <select class="form-select" v-model="eventForm.categoryId">
-                    <option v-for="category in categories" :key="category.id" :value="category.id">
-                      {{ category.title }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div class="mb-3">
-                <textarea class="form-control" :rows="5" v-model="eventForm.title"></textarea>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button v-if="eventForm.id" class="btn btn-danger" @click="handleDeleteEvent">Delete</button>
-            <button type="button" class="btn btn-primary" @click="saveEvent">Save</button>
+    <Modal v-model="modalVisible" :title="`${eventForm.id ? 'Edit' : 'New'} Event`">
+      <form>
+        <div class="row mb-3">
+          <label class="col-sm-2 col-form-label">Category:</label>
+          <div class="col-sm-10">
+            <select class="form-select" v-model="eventForm.categoryId">
+              <option v-for="category in categories" :key="category.id" :value="category.id">
+                {{ category.title }}
+              </option>
+            </select>
           </div>
         </div>
-      </div>
-    </div>
+        <div class="mb-3">
+          <textarea class="form-control" :rows="5" v-model="eventForm.title"></textarea>
+        </div>
+      </form>
+      <template #footer>
+        <button type="button" class="btn btn-secondary" @click="modalVisible = false">Close</button>
+        <button v-if="eventForm.id" class="btn btn-danger" @click="handleDeleteEvent">Delete</button>
+        <button type="button" class="btn btn-primary" @click="saveEvent">Save</button>
+      </template>
+    </Modal>
   </div>
 </template>
 
