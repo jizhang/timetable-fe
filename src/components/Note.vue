@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import debounce from 'just-debounce-it'
 import { ref, reactive, onMounted } from 'vue'
+import _ from 'lodash'
 import dayjs from 'dayjs'
 import { noteApi } from '@/common/api'
 
@@ -27,7 +27,7 @@ function saveNote() {
   })
 }
 
-const handleChangeContent = debounce(saveNote, 5000)
+const handleChangeContent = _.debounce(saveNote, 5000)
 </script>
 
 <template>

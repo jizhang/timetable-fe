@@ -2,7 +2,6 @@
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import _ from 'lodash'
 import dayjs from 'dayjs'
-import debounce from 'just-debounce-it'
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -70,7 +69,7 @@ const categories = ref<Category[]>([])
 const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
 let calendarApi: CalendarApi
 
-const handleResizeWindow = debounce(() => {
+const handleResizeWindow = _.debounce(() => {
   calendarApi.setOption('height', calculateCalendarHeight())
 }, 200)
 
