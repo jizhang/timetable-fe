@@ -41,7 +41,7 @@ const options = computed<CalendarOptions>(() => {
     slotLabelFormat: timeFormat,
 
     datesSet({ start, end }) {
-      eventStore.getEvents(start, end)
+      eventStore.getEvents(start, end) // TODO After categories are loaded
     },
 
     select({ start, end }) {
@@ -82,13 +82,8 @@ const handleResizeWindow = _.debounce(() => {
 }, 200)
 
 onMounted(() => {
-  if (!calendarRef.value) {
-    return
-  }
-  calendarApi = calendarRef.value.getApi()
-
+  calendarApi = calendarRef.value!.getApi()
   eventStore.getCategories()
-
   window.addEventListener('resize', handleResizeWindow)
 })
 
@@ -113,19 +108,7 @@ const eventForm = reactive({
 
 function saveEvent() {
   const event = _.clone(eventForm)
-  eventStore.saveEvent(event).then(id => {
-    if (!event.id) {
-      calendarApi.addEvent({
-        ...event,
-        id: String(id),
-        color: eventStore.getCategoryColor(event.categoryId),
-      }, true)
-    } else {
-      const calEvent = calendarApi.getEventById(String(event.id))
-      calEvent?.setProp('title', event.title)
-      calEvent?.setProp('color', eventStore.getCategoryColor(event.categoryId))
-      calEvent?.setExtendedProp('categoryId', event.categoryId)
-    }
+  eventStore.saveEvent(event).then(() => {
     modalVisible.value = false
   })
 }
@@ -142,9 +125,7 @@ function updateEventForm(event: CalendarEvent) {
 
 function handleDeleteEvent() {
   if (confirm('Are you sure?')) {
-    eventStore.deleteEvent(eventForm.id).then(eventId => {
-      const event = calendarApi.getEventById(String(eventId))
-      event?.remove()
+    eventStore.deleteEvent(eventForm.id).then(() => {
       modalVisible.value = false
     })
   }

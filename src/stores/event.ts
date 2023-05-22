@@ -22,7 +22,7 @@ export default defineStore('event', () => {
   }
 
   function getCategoryColor(categoryId: number) {
-    const category = _(categories.value).filter(['id', categoryId]).head()
+    const category = _.find(categories.value, ['id', categoryId])
     return category?.color || ''
   }
 
@@ -48,13 +48,23 @@ export default defineStore('event', () => {
 
   async function saveEvent(event: Event) {
     const payload = await eventApi.saveEvent({ event })
-    return payload.id!
+
+    if (!event.id) {
+      events.value.push({
+        ...event,
+        id: payload.id,
+      })
+    } else {
+      const item = _.find(events.value, ['id', payload.id]) as Event
+      item.categoryId = event.categoryId
+      item.title = event.title
+    }
   }
 
   async function deleteEvent(id: number | string) {
     const eventId = { id: _.toInteger(id) }
     const payload = await eventApi.deleteEvent({ eventId })
-    return payload.id!
+    _.remove(events.value, ['id', payload.id])
   }
 
   return {
