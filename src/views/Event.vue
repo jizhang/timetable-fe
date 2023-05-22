@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import _ from 'lodash'
-import dayjs from 'dayjs'
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -45,7 +44,7 @@ const options = computed<CalendarOptions>(() => {
     },
 
     select({ start, end }) {
-      Object.assign(eventForm, {
+      _.assign(eventForm, {
         ...defaultEventForm,
         start,
         end,
@@ -66,10 +65,6 @@ const options = computed<CalendarOptions>(() => {
     eventResize({ event }) {
       updateEventForm(event)
       saveEvent()
-    },
-
-    eventsSet(events) {
-      updateCategoryDurations(events)
     },
   }
 })
@@ -94,8 +89,8 @@ onUnmounted(() => {
 const modalVisible = ref(false)
 
 const defaultEventForm = {
-  id: 0,
-  categoryId: 1,
+  id: '',
+  categoryId: '1',
   title: '',
   start: new Date(),
   end: new Date(),
@@ -106,16 +101,22 @@ const eventForm = reactive({
 })
 
 function saveEvent() {
-  const event = _.clone(eventForm)
+  const event = {
+    id: eventForm.id ? _.toInteger(eventForm.id) : undefined,
+    categoryId: _.toInteger(eventForm.categoryId),
+    title: eventForm.title,
+    start: eventForm.start,
+    end: eventForm.end,
+  }
   eventStore.saveEvent(event).then(() => {
     modalVisible.value = false
   })
 }
 
 function updateEventForm(event: CalendarEvent) {
-  Object.assign(eventForm, {
+  _.assign(eventForm, {
     id: event.id,
-    categoryId: event.extendedProps.categoryId,
+    categoryId: String(event.extendedProps.categoryId),
     title: event.title,
     start: event.start!,
     end: event.end!,
@@ -124,7 +125,7 @@ function updateEventForm(event: CalendarEvent) {
 
 function handleDeleteEvent() {
   if (confirm('Are you sure?')) {
-    eventStore.deleteEvent(eventForm.id).then(() => {
+    eventStore.deleteEvent(_.toInteger(eventForm.id)).then(() => {
       modalVisible.value = false
     })
   }
@@ -146,44 +147,6 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(pingHandler)
 })
-
-const categoryDurations = ref<{
-  title: string
-  duration: string
-}[]>([])
-
-function updateCategoryDurations(events: CalendarEvent[]) {
-  const durations: Record<string, number> = {}
-
-  for (const event of events) {
-    const start = dayjs(event.start)
-    if (!start.isSame(dayjs(), 'day')) {
-      continue
-    }
-
-    const end = dayjs(event.end)
-    const minutes = end.diff(start, 'minutes')
-    const key = String(event.extendedProps.categoryId)
-    if (!(key in durations)) {
-      durations[key] = 0
-    }
-    durations[key] += minutes
-  }
-
-  categoryDurations.value = _.map(eventStore.categories, (category) => {
-    const key = String(category.id)
-    let duration: string
-    if (key in durations) {
-      duration = (durations[key] / 60) + 'h'
-    } else {
-      duration = '-'
-    }
-    return {
-      title: String(category.title),
-      duration,
-    }
-  })
-}
 </script>
 
 <template>
@@ -197,7 +160,11 @@ function updateCategoryDurations(events: CalendarEvent[]) {
 
       <div style="margin-top: 10px;">
         <ul class="list-group">
-          <li v-for="item in categoryDurations" :key="item.title" class="list-group-item d-flex justify-content-between align-items-center">
+          <li
+            v-for="item in eventStore.categoryDurations"
+            :key="item.title"
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
             {{ item.title }}
             <span>{{ item.duration }}</span>
           </li>
