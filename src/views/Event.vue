@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import dayjs from 'dayjs'
-import debounce from 'just-debounce-it'
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import _ from 'lodash'
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi, EventSourceFuncArg } from '@fullcalendar/core'
-import type { Category } from '@/openapi'
-import { commonApi, eventApi } from '@/common/api'
+import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi } from '@fullcalendar/core'
+import { commonApi } from '@/common/api'
+import useEventStore from '@/stores/event'
 import Modal from '@/components/Modal.vue'
 import Note from '@/components/Note.vue'
 
@@ -23,70 +22,62 @@ const timeFormat: FormatterInput = {
 }
 
 // Calendar
-const options: CalendarOptions = {
-  allDaySlot: false,
-  editable: true,
-  eventTimeFormat: timeFormat,
-  firstDay: 1,
-  height: calculateCalendarHeight(),
-  nowIndicator: true,
-  plugins: [timeGridPlugin, interactionPlugin],
-  scrollTime: '08:00:00',
-  selectable: true,
-  selectOverlap: false,
-  slotLabelFormat: timeFormat,
+const eventStore = useEventStore()
 
-  select({ start, end }) {
-    Object.assign(eventForm, {
-      ...defaultEventForm,
-      start,
-      end,
-    })
-    modalVisible.value = true
-  },
+const options = computed<CalendarOptions>(() => {
+  return {
+    allDaySlot: false,
+    editable: true,
+    events: eventStore.calEvents,
+    eventTimeFormat: timeFormat,
+    firstDay: 1,
+    height: calculateCalendarHeight(),
+    nowIndicator: true,
+    plugins: [timeGridPlugin, interactionPlugin],
+    scrollTime: '08:00:00',
+    selectable: true,
+    selectOverlap: false,
+    slotLabelFormat: timeFormat,
 
-  eventClick({ event }) {
-    updateEventForm(event)
-    modalVisible.value = true
-  },
+    datesSet({ start, end }) {
+      eventStore.getEvents(start, end)
+    },
 
-  eventDrop({ event }) {
-    updateEventForm(event)
-    saveEvent()
-  },
+    select({ start, end }) {
+      _.assign(eventForm, {
+        ...defaultEventForm,
+        start,
+        end,
+      })
+      modalVisible.value = true
+    },
 
-  eventResize({ event }) {
-    updateEventForm(event)
-    saveEvent()
-  },
+    eventClick({ event }) {
+      updateEventForm(event)
+      modalVisible.value = true
+    },
 
-  eventsSet(events) {
-    updateCategoryDurations(events)
-  },
-}
+    eventDrop({ event }) {
+      updateEventForm(event)
+      saveEvent()
+    },
 
-const categories = ref<Category[]>([])
+    eventResize({ event }) {
+      updateEventForm(event)
+      saveEvent()
+    },
+  }
+})
+
 const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
 let calendarApi: CalendarApi
 
-const handleResizeWindow = debounce(() => {
+const handleResizeWindow = _.debounce(() => {
   calendarApi.setOption('height', calculateCalendarHeight())
 }, 200)
 
 onMounted(() => {
-  if (!calendarRef.value) {
-    return
-  }
-  calendarApi = calendarRef.value.getApi()
-
-  // TODO Pinia
-  eventApi.getEventCategories().then((response) => {
-    categories.value = response.categories || []
-    calendarApi.addEventSource((args: EventSourceFuncArg) => {
-      return getEvents(args.start, args.end)
-    })
-  })
-
+  calendarApi = calendarRef.value!.getApi()
   window.addEventListener('resize', handleResizeWindow)
 })
 
@@ -94,37 +85,12 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResizeWindow)
 })
 
-function getCategoryColor(categoryId: number) {
-  for (const category of categories.value) {
-    if (category.id === categoryId) {
-      return category.color
-    }
-  }
-}
-
-async function getEvents(start: Date, end: Date) {
-  const response = await eventApi.getEventList({ start, end })
-  if (!response.events) {
-    return []
-  }
-  return response.events.map((value) => {
-    return {
-      id: String(value.id),
-      categoryId: value.categoryId,
-      title: value.title,
-      start: value.start,
-      end: value.end,
-      color: getCategoryColor(value.categoryId),
-    }
-  })
-}
-
 // Event
 const modalVisible = ref(false)
 
 const defaultEventForm = {
-  id: 0, // TODO number | null
-  categoryId: 1,
+  id: '',
+  categoryId: '1',
   title: '',
   start: new Date(),
   end: new Date(),
@@ -135,28 +101,22 @@ const eventForm = reactive({
 })
 
 function saveEvent() {
-  eventApi.saveEvent({ event: eventForm }).then((response) => {
-    // TODO Event form may change during request.
-    if (!eventForm.id) {
-      calendarApi.addEvent({
-        ...eventForm,
-        id: String(response.id),
-        color: getCategoryColor(eventForm.categoryId),
-      }, true)
-    } else {
-      const event = calendarApi.getEventById(String(eventForm.id))
-      event?.setProp('title', eventForm.title)
-      event?.setProp('color', getCategoryColor(eventForm.categoryId))
-      event?.setExtendedProp('categoryId', eventForm.categoryId)
-    }
+  const event = {
+    id: eventForm.id ? _.toInteger(eventForm.id) : undefined,
+    categoryId: _.toInteger(eventForm.categoryId),
+    title: eventForm.title,
+    start: eventForm.start,
+    end: eventForm.end,
+  }
+  eventStore.saveEvent(event).then(() => {
     modalVisible.value = false
   })
 }
 
 function updateEventForm(event: CalendarEvent) {
-  Object.assign(eventForm, {
+  _.assign(eventForm, {
     id: event.id,
-    categoryId: event.extendedProps.categoryId,
+    categoryId: String(event.extendedProps.categoryId),
     title: event.title,
     start: event.start!,
     end: event.end!,
@@ -165,10 +125,7 @@ function updateEventForm(event: CalendarEvent) {
 
 function handleDeleteEvent() {
   if (confirm('Are you sure?')) {
-    const eventId = { id: eventForm.id }
-    eventApi.deleteEvent({ eventId }).then(() => {
-      const event = calendarApi.getEventById(String(eventForm.id)) // TODO Use response.id
-      event?.remove()
+    eventStore.deleteEvent(_.toInteger(eventForm.id)).then(() => {
       modalVisible.value = false
     })
   }
@@ -190,44 +147,6 @@ onMounted(() => {
 onUnmounted(() => {
   clearInterval(pingHandler)
 })
-
-const categoryDurations = ref<{
-  title: string
-  duration: string
-}[]>([])
-
-function updateCategoryDurations(events: CalendarEvent[]) {
-  const durations: Record<string, number> = {}
-
-  for (const event of events) {
-    const start = dayjs(event.start)
-    if (!start.isSame(dayjs(), 'day')) {
-      continue
-    }
-
-    const end = dayjs(event.end)
-    const minutes = end.diff(start, 'minutes')
-    const key = String(event.extendedProps.categoryId)
-    if (!(key in durations)) {
-      durations[key] = 0
-    }
-    durations[key] += minutes
-  }
-
-  categoryDurations.value = categories.value.map((category) => {
-    const key = String(category.id)
-    let duration: string
-    if (key in durations) {
-      duration = (durations[key] / 60) + 'h'
-    } else {
-      duration = '-'
-    }
-    return {
-      title: String(category.title),
-      duration,
-    }
-  })
-}
 </script>
 
 <template>
@@ -241,7 +160,11 @@ function updateCategoryDurations(events: CalendarEvent[]) {
 
       <div style="margin-top: 10px;">
         <ul class="list-group">
-          <li v-for="item in categoryDurations" :key="item.title" class="list-group-item d-flex justify-content-between align-items-center">
+          <li
+            v-for="item in eventStore.categoryDurations"
+            :key="item.title"
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
             {{ item.title }}
             <span>{{ item.duration }}</span>
           </li>
@@ -255,7 +178,7 @@ function updateCategoryDurations(events: CalendarEvent[]) {
           <label class="col-sm-2 col-form-label">Category:</label>
           <div class="col-sm-10">
             <select class="form-select" v-model="eventForm.categoryId">
-              <option v-for="category in categories" :key="category.id" :value="category.id">
+              <option v-for="category in eventStore.categories" :key="category.id" :value="category.id">
                 {{ category.title }}
               </option>
             </select>
