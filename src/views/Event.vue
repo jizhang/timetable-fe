@@ -6,8 +6,8 @@ import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi, EventSourceFuncArg } from '@fullcalendar/core'
-import type { Category } from '@/openapi'
-import { commonApi, eventApi } from '@/common/api'
+import { commonApi } from '@/common/api'
+import useEventStore from '@/stores/event'
 import Modal from '@/components/Modal.vue'
 import Note from '@/components/Note.vue'
 
@@ -65,7 +65,7 @@ const options: CalendarOptions = {
   },
 }
 
-const categories = ref<Category[]>([])
+const eventStore = useEventStore()
 const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
 let calendarApi: CalendarApi
 
@@ -79,9 +79,7 @@ onMounted(() => {
   }
   calendarApi = calendarRef.value.getApi()
 
-  // TODO Pinia
-  eventApi.getEventCategories().then((response) => {
-    categories.value = response.categories || []
+  eventStore.getCategories().then(() => {
     calendarApi.addEventSource((args: EventSourceFuncArg) => {
       return getEvents(args.start, args.end)
     })
@@ -95,19 +93,13 @@ onUnmounted(() => {
 })
 
 function getCategoryColor(categoryId: number) {
-  for (const category of categories.value) {
-    if (category.id === categoryId) {
-      return category.color
-    }
-  }
+  const item = _(eventStore.categories).filter(['id', categoryId]).head()
+  return item?.color || ''
 }
 
 async function getEvents(start: Date, end: Date) {
-  const response = await eventApi.getEventList({ start, end })
-  if (!response.events) {
-    return []
-  }
-  return response.events.map((value) => {
+  await eventStore.getEvents(start, end)
+  return _.map(eventStore.events, value => {
     return {
       id: String(value.id),
       categoryId: value.categoryId,
@@ -136,11 +128,11 @@ const eventForm = reactive({
 
 function saveEvent() {
   const event = _.clone(eventForm)
-  eventApi.saveEvent({ event }).then((response) => {
+  eventStore.saveEvent(event).then(id => {
     if (!event.id) {
       calendarApi.addEvent({
         ...event,
-        id: String(response.id),
+        id: String(id),
         color: getCategoryColor(event.categoryId),
       }, true)
     } else {
@@ -165,9 +157,8 @@ function updateEventForm(event: CalendarEvent) {
 
 function handleDeleteEvent() {
   if (confirm('Are you sure?')) {
-    const eventId = { id: eventForm.id }
-    eventApi.deleteEvent({ eventId }).then(payload => {
-      const event = calendarApi.getEventById(String(payload.id))
+    eventStore.deleteEvent(eventForm.id).then(eventId => {
+      const event = calendarApi.getEventById(String(eventId))
       event?.remove()
       modalVisible.value = false
     })
@@ -214,7 +205,7 @@ function updateCategoryDurations(events: CalendarEvent[]) {
     durations[key] += minutes
   }
 
-  categoryDurations.value = categories.value.map((category) => {
+  categoryDurations.value = _.map(eventStore.categories, (category) => {
     const key = String(category.id)
     let duration: string
     if (key in durations) {
@@ -255,7 +246,7 @@ function updateCategoryDurations(events: CalendarEvent[]) {
           <label class="col-sm-2 col-form-label">Category:</label>
           <div class="col-sm-10">
             <select class="form-select" v-model="eventForm.categoryId">
-              <option v-for="category in categories" :key="category.id" :value="category.id">
+              <option v-for="category in eventStore.categories" :key="category.id" :value="category.id">
                 {{ category.title }}
               </option>
             </select>
