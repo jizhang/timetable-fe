@@ -15,10 +15,13 @@ interface CalEvent {
 
 export default defineStore('event', () => {
   const categories = ref<Category[]>([])
+  const categoriesLoaded = ref(false)
 
   async function getCategories() {
+    if (categoriesLoaded.value) return
     const payload = await eventApi.getEventCategories()
     categories.value = payload.categories || []
+    categoriesLoaded.value = true
   }
 
   function getCategoryColor(categoryId: number) {
@@ -42,6 +45,7 @@ export default defineStore('event', () => {
   })
 
   async function getEvents(start: Date, end: Date) {
+    await getCategories()
     const payload = await eventApi.getEventList({ start, end })
     events.value = payload.events || []
   }
@@ -69,8 +73,6 @@ export default defineStore('event', () => {
 
   return {
     categories,
-    getCategories,
-    getCategoryColor,
     calEvents,
     getEvents,
     saveEvent,

@@ -5,7 +5,7 @@ import dayjs from 'dayjs'
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi, EventSourceFuncArg } from '@fullcalendar/core'
+import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi } from '@fullcalendar/core'
 import { commonApi } from '@/common/api'
 import useEventStore from '@/stores/event'
 import Modal from '@/components/Modal.vue'
@@ -41,7 +41,7 @@ const options = computed<CalendarOptions>(() => {
     slotLabelFormat: timeFormat,
 
     datesSet({ start, end }) {
-      eventStore.getEvents(start, end) // TODO After categories are loaded
+      eventStore.getEvents(start, end)
     },
 
     select({ start, end }) {
@@ -83,7 +83,6 @@ const handleResizeWindow = _.debounce(() => {
 
 onMounted(() => {
   calendarApi = calendarRef.value!.getApi()
-  eventStore.getCategories()
   window.addEventListener('resize', handleResizeWindow)
 })
 
