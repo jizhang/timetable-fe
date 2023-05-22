@@ -1,8 +1,17 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import _ from 'lodash'
 import type { Category, Event } from '@/openapi'
 import { eventApi } from '@/common/api'
+
+interface CalEvent {
+  id: string
+  categoryId: number
+  title: string
+  start: Date
+  end: Date
+  color: string
+}
 
 export default defineStore('event', () => {
   const categories = ref<Category[]>([])
@@ -12,7 +21,25 @@ export default defineStore('event', () => {
     categories.value = payload.categories || []
   }
 
+  function getCategoryColor(categoryId: number) {
+    const category = _(categories.value).filter(['id', categoryId]).head()
+    return category?.color || ''
+  }
+
   const events = ref<Event[]>([])
+
+  const calEvents = computed<CalEvent[]>(() => {
+    return _.map(events.value, event => {
+      return {
+        id: String(event.id),
+        categoryId: event.categoryId,
+        title: event.title,
+        start: event.start,
+        end: event.end,
+        color: getCategoryColor(event.categoryId),
+      }
+    })
+  })
 
   async function getEvents(start: Date, end: Date) {
     const payload = await eventApi.getEventList({ start, end })
@@ -33,7 +60,8 @@ export default defineStore('event', () => {
   return {
     categories,
     getCategories,
-    events,
+    getCategoryColor,
+    calEvents,
     getEvents,
     saveEvent,
     deleteEvent,

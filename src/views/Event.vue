@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import FullCalendar from '@fullcalendar/vue3'
@@ -23,49 +23,57 @@ const timeFormat: FormatterInput = {
 }
 
 // Calendar
-const options: CalendarOptions = {
-  allDaySlot: false,
-  editable: true,
-  eventTimeFormat: timeFormat,
-  firstDay: 1,
-  height: calculateCalendarHeight(),
-  nowIndicator: true,
-  plugins: [timeGridPlugin, interactionPlugin],
-  scrollTime: '08:00:00',
-  selectable: true,
-  selectOverlap: false,
-  slotLabelFormat: timeFormat,
-
-  select({ start, end }) {
-    Object.assign(eventForm, {
-      ...defaultEventForm,
-      start,
-      end,
-    })
-    modalVisible.value = true
-  },
-
-  eventClick({ event }) {
-    updateEventForm(event)
-    modalVisible.value = true
-  },
-
-  eventDrop({ event }) {
-    updateEventForm(event)
-    saveEvent()
-  },
-
-  eventResize({ event }) {
-    updateEventForm(event)
-    saveEvent()
-  },
-
-  eventsSet(events) {
-    updateCategoryDurations(events)
-  },
-}
-
 const eventStore = useEventStore()
+
+const options = computed<CalendarOptions>(() => {
+  return {
+    allDaySlot: false,
+    editable: true,
+    events: eventStore.calEvents,
+    eventTimeFormat: timeFormat,
+    firstDay: 1,
+    height: calculateCalendarHeight(),
+    nowIndicator: true,
+    plugins: [timeGridPlugin, interactionPlugin],
+    scrollTime: '08:00:00',
+    selectable: true,
+    selectOverlap: false,
+    slotLabelFormat: timeFormat,
+
+    datesSet({ start, end }) {
+      eventStore.getEvents(start, end)
+    },
+
+    select({ start, end }) {
+      Object.assign(eventForm, {
+        ...defaultEventForm,
+        start,
+        end,
+      })
+      modalVisible.value = true
+    },
+
+    eventClick({ event }) {
+      updateEventForm(event)
+      modalVisible.value = true
+    },
+
+    eventDrop({ event }) {
+      updateEventForm(event)
+      saveEvent()
+    },
+
+    eventResize({ event }) {
+      updateEventForm(event)
+      saveEvent()
+    },
+
+    eventsSet(events) {
+      updateCategoryDurations(events)
+    },
+  }
+})
+
 const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
 let calendarApi: CalendarApi
 
@@ -79,11 +87,7 @@ onMounted(() => {
   }
   calendarApi = calendarRef.value.getApi()
 
-  eventStore.getCategories().then(() => {
-    calendarApi.addEventSource((args: EventSourceFuncArg) => {
-      return getEvents(args.start, args.end)
-    })
-  })
+  eventStore.getCategories()
 
   window.addEventListener('resize', handleResizeWindow)
 })
@@ -91,25 +95,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('resize', handleResizeWindow)
 })
-
-function getCategoryColor(categoryId: number) {
-  const item = _(eventStore.categories).filter(['id', categoryId]).head()
-  return item?.color || ''
-}
-
-async function getEvents(start: Date, end: Date) {
-  await eventStore.getEvents(start, end)
-  return _.map(eventStore.events, value => {
-    return {
-      id: String(value.id),
-      categoryId: value.categoryId,
-      title: value.title,
-      start: value.start,
-      end: value.end,
-      color: getCategoryColor(value.categoryId),
-    }
-  })
-}
 
 // Event
 const modalVisible = ref(false)
@@ -133,12 +118,12 @@ function saveEvent() {
       calendarApi.addEvent({
         ...event,
         id: String(id),
-        color: getCategoryColor(event.categoryId),
+        color: eventStore.getCategoryColor(event.categoryId),
       }, true)
     } else {
       const calEvent = calendarApi.getEventById(String(event.id))
       calEvent?.setProp('title', event.title)
-      calEvent?.setProp('color', getCategoryColor(event.categoryId))
+      calEvent?.setProp('color', eventStore.getCategoryColor(event.categoryId))
       calEvent?.setExtendedProp('categoryId', event.categoryId)
     }
     modalVisible.value = false
