@@ -13,7 +13,7 @@ const loginForm = reactive({
 function handleSubmit(event: Event) {
   event.preventDefault()
 
-  userApi.userLogin({ loginForm }).then(payload => {
+  userApi.userLogin({ loginForm }).then(() => {
     router.push('/')
   })
 }
@@ -21,16 +21,31 @@ function handleSubmit(event: Event) {
 
 <template>
   <div class="d-flex justify-content-center">
-    <form style="width: 300px;" @submit="handleSubmit">
+    <form
+      style="width: 300px;"
+      @submit="handleSubmit"
+    >
       <div class="mb-3">
         <label class="form-label">Username</label>
-        <input class="form-control" v-model="loginForm.username" />
+        <input
+          v-model="loginForm.username"
+          class="form-control"
+        >
       </div>
       <div class="mb-3">
         <label class="form-label">Password</label>
-        <input type="password" class="form-control" v-model="loginForm.password" />
+        <input
+          v-model="loginForm.password"
+          type="password"
+          class="form-control"
+        >
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button
+        type="submit"
+        class="btn btn-primary"
+      >
+        Submit
+      </button>
     </form>
   </div>
 </template>

@@ -22,7 +22,7 @@ class UnauthorizedMiddleware implements Middleware {
     }
 
     if (response.status === 401) {
-      routerHolder.router!.push('/login')
+      routerHolder.router?.push('/login')
       return
     }
   }

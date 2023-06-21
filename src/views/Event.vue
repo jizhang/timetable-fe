@@ -77,7 +77,9 @@ const handleResizeWindow = _.debounce(() => {
 }, 200)
 
 onMounted(() => {
-  calendarApi = calendarRef.value!.getApi()
+  if (calendarRef.value) {
+    calendarApi = calendarRef.value.getApi()
+  }
   window.addEventListener('resize', handleResizeWindow)
 })
 
@@ -118,8 +120,8 @@ function updateEventForm(event: CalendarEvent) {
     id: event.id,
     categoryId: String(event.extendedProps.categoryId),
     title: event.title,
-    start: event.start!,
-    end: event.end!,
+    start: event.start || new Date(),
+    end: event.end || new Date(),
   })
 }
 
@@ -152,7 +154,10 @@ onUnmounted(() => {
 <template>
   <div>
     <div class="calendar">
-      <FullCalendar :options="options" ref="calendarRef" />
+      <FullCalendar
+        ref="calendarRef"
+        :options="options"
+      />
     </div>
 
     <div class="note">
@@ -172,26 +177,58 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <Modal v-model="modalVisible" :title="`${eventForm.id ? 'Edit' : 'New'} Event`">
+    <Modal
+      v-model="modalVisible"
+      :title="`${eventForm.id ? 'Edit' : 'New'} Event`"
+    >
       <form>
         <div class="row mb-3">
           <label class="col-sm-2 col-form-label">Category:</label>
           <div class="col-sm-10">
-            <select class="form-select" v-model="eventForm.categoryId">
-              <option v-for="category in eventStore.categories" :key="category.id" :value="category.id">
+            <select
+              v-model="eventForm.categoryId"
+              class="form-select"
+            >
+              <option
+                v-for="category in eventStore.categories"
+                :key="category.id"
+                :value="category.id"
+              >
                 {{ category.title }}
               </option>
             </select>
           </div>
         </div>
         <div class="mb-3">
-          <textarea class="form-control" :rows="5" v-model="eventForm.title"></textarea>
+          <textarea
+            v-model="eventForm.title"
+            class="form-control"
+            :rows="5"
+          />
         </div>
       </form>
       <template #footer>
-        <button type="button" class="btn btn-secondary" @click="modalVisible = false">Close</button>
-        <button v-if="eventForm.id" class="btn btn-danger" @click="handleDeleteEvent">Delete</button>
-        <button type="button" class="btn btn-primary" @click="saveEvent">Save</button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="modalVisible = false"
+        >
+          Close
+        </button>
+        <button
+          v-if="eventForm.id"
+          class="btn btn-danger"
+          @click="handleDeleteEvent"
+        >
+          Delete
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          @click="saveEvent"
+        >
+          Save
+        </button>
       </template>
     </Modal>
   </div>

@@ -5,8 +5,8 @@
   "scripts": {
     "start": "vite",
     "start:local": "cross-env MOCK=none vite",
-    "lint": "vue-tsc --noEmit",
-    "lint:ci": "vue-tsc --noEmit",
+    "lint": "eslint --ext .ts,.vue --fix . && vue-tsc --noEmit",
+    "lint:ci": "eslint --ext .ts,.vue . && vue-tsc --noEmit",
     "build": "vite build",
     "preview": "vite preview",
     "gen": "openapi-generator-cli generate"
@@ -29,8 +29,12 @@
     "@types/bootstrap": "^5.1.12",
     "@types/lodash": "^4.14.194",
     "@types/node": "^18.11.0",
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "@typescript-eslint/parser": "^5.60.0",
     "@vitejs/plugin-vue": "^4.0.0",
     "cross-env": "^7.0.3",
+    "eslint": "^8.43.0",
+    "eslint-plugin-vue": "^9.15.0",
     "mockjs": "^1.1.0",
     "typescript": "^4.9.5",
     "vite": "^4.3.9",
