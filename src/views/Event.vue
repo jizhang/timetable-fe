@@ -234,27 +234,33 @@ onUnmounted(() => {
   </div>
 </template>
 
-<style>
+<style lang="scss">
 .calendar {
   width: 1000px;
-}
 
-.calendar .fc-col-header-cell a {
-  color: inherit;
-  text-decoration: inherit;
-}
+  .fc-col-header-cell {
+    a {
+      color: inherit;
+      text-decoration: inherit;
+    }
+  }
 
-.calendar .fc .fc-timegrid-slot {
-  height: 30px;
-}
+  .fc {
+    .fc-timegrid-slot {
+      height: 30px;
+    }
+  }
 
-.calendar .fc-timegrid-event {
-  font-size: 12px;
-  line-height: 100%;
-}
+  .fc-timegrid-event {
+    font-size: 12px;
+    line-height: 100%;
+  }
 
-.calendar .fc-v-event .fc-event-title {
-  overflow: visible;
+  .fc-v-event {
+    .fc-event-title {
+      overflow: visible;
+    }
+  }
 }
 
 .note {
