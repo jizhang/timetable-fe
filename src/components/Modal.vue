@@ -33,12 +33,21 @@ function close() {
 </script>
 
 <template>
-  <div class="modal" ref="modalRef">
+  <div
+    ref="modalRef"
+    class="modal"
+  >
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">{{ props.title }}</h5>
-          <button type="button" class="btn-close" @click="close" />
+          <h5 class="modal-title">
+            {{ props.title }}
+          </h5>
+          <button
+            type="button"
+            class="btn-close"
+            @click="close"
+          />
         </div>
         <div class="modal-body">
           <slot />

@@ -32,12 +32,27 @@ const handleChangeContent = _.debounce(saveNote, 5000)
 
 <template>
   <form @submit="handleSubmit">
-    <div class="title">Note</div>
-    <textarea class="content font-monospace lh-sm" v-model="noteForm.content" @input="handleChangeContent"></textarea>
-    <div>
-      <button type="submit" class="btn btn-primary btn-sm" :disabled="isLoading">Save</button>
+    <div class="title">
+      Note
     </div>
-    <div v-if="created" class="alert alert-success saved">
+    <textarea
+      v-model="noteForm.content"
+      class="content font-monospace lh-sm"
+      @input="handleChangeContent"
+    />
+    <div>
+      <button
+        type="submit"
+        class="btn btn-primary btn-sm"
+        :disabled="isLoading"
+      >
+        Save
+      </button>
+    </div>
+    <div
+      v-if="created"
+      class="alert alert-success saved"
+    >
       Saved {{ created }}
     </div>
   </form>
