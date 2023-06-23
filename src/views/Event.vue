@@ -24,12 +24,18 @@ const timeFormat: FormatterInput = {
 // Calendar
 const eventStore = useEventStore()
 
+const eventConstraint = {
+  startTime: '00:00',
+  endTime: '24:00',
+}
+
 const options = computed<CalendarOptions>(() => {
   return {
     allDaySlot: false,
     editable: true,
     events: eventStore.calEvents,
     eventTimeFormat: timeFormat,
+    eventConstraint,
     firstDay: 1,
     height: calculateCalendarHeight(),
     nowIndicator: true,
@@ -37,6 +43,7 @@ const options = computed<CalendarOptions>(() => {
     scrollTime: '08:00:00',
     selectable: true,
     selectOverlap: false,
+    selectConstraint: eventConstraint,
     slotLabelFormat: timeFormat,
 
     datesSet({ start, end }) {
