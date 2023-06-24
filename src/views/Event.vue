@@ -5,9 +5,10 @@ import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi } from '@fullcalendar/core'
+import type { Event } from '@/openapi'
 import { commonApi } from '@/common/api'
 import useEventStore from '@/stores/event'
-import Modal from '@/components/Modal.vue'
+import EditForm from '@/components/event/EditForm.vue'
 import Note from '@/components/Note.vue'
 
 // Utilities
@@ -51,8 +52,8 @@ const options = computed<CalendarOptions>(() => {
     },
 
     select({ start, end }) {
-      _.assign(eventForm, {
-        ...defaultEventForm,
+      _.assign(currentEvent, {
+        ...defaultEvent,
         start,
         end,
       })
@@ -60,18 +61,18 @@ const options = computed<CalendarOptions>(() => {
     },
 
     eventClick({ event }) {
-      updateEventForm(event)
+      updateCurrentEvent(event)
       modalVisible.value = true
     },
 
     eventDrop({ event }) {
-      updateEventForm(event)
-      saveEvent()
+      updateCurrentEvent(event)
+      saveEvent(currentEvent)
     },
 
     eventResize({ event }) {
-      updateEventForm(event)
-      saveEvent()
+      updateCurrentEvent(event)
+      saveEvent(currentEvent)
     },
   }
 })
@@ -97,47 +98,36 @@ onUnmounted(() => {
 // Event
 const modalVisible = ref(false)
 
-const defaultEventForm = {
-  id: '',
-  categoryId: '1',
+const defaultEvent: Event = {
+  id: undefined,
+  categoryId: 1,
   title: '',
   start: new Date(),
   end: new Date(),
 }
+const currentEvent = reactive({ ...defaultEvent })
 
-const eventForm = reactive({
-  ...defaultEventForm,
-})
-
-function saveEvent() {
-  const event = {
-    id: eventForm.id ? _.toInteger(eventForm.id) : undefined,
-    categoryId: _.toInteger(eventForm.categoryId),
-    title: eventForm.title,
-    start: eventForm.start,
-    end: eventForm.end,
-  }
+function saveEvent(event: Event) {
   eventStore.saveEvent(event).then(() => {
     modalVisible.value = false
   })
 }
 
-function updateEventForm(event: CalendarEvent) {
-  _.assign(eventForm, {
-    id: event.id,
-    categoryId: String(event.extendedProps.categoryId),
+function updateCurrentEvent(event: CalendarEvent) {
+  const input: Event = {
+    id: _.toInteger(event.id),
+    categoryId: event.extendedProps.categoryId,
     title: event.title,
     start: event.start || new Date(),
     end: event.end || new Date(),
-  })
+  }
+  _.assign(currentEvent, input)
 }
 
-function handleDeleteEvent() {
-  if (confirm('Are you sure?')) {
-    eventStore.deleteEvent(_.toInteger(eventForm.id)).then(() => {
-      modalVisible.value = false
-    })
-  }
+function deleteEvent(id: number) {
+  eventStore.deleteEvent(id).then(() => {
+    modalVisible.value = false
+  })
 }
 
 let pingHandler: NodeJS.Timer
@@ -184,60 +174,12 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <Modal
+    <EditForm
       v-model="modalVisible"
-      :title="`${eventForm.id ? 'Edit' : 'New'} Event`"
-    >
-      <form>
-        <div class="row mb-3">
-          <label class="col-sm-2 col-form-label">Category:</label>
-          <div class="col-sm-10">
-            <select
-              v-model="eventForm.categoryId"
-              class="form-select"
-            >
-              <option
-                v-for="category in eventStore.categories"
-                :key="category.id"
-                :value="category.id"
-              >
-                {{ category.title }}
-              </option>
-            </select>
-          </div>
-        </div>
-        <div class="mb-3">
-          <textarea
-            v-model="eventForm.title"
-            class="form-control"
-            :rows="5"
-          />
-        </div>
-      </form>
-      <template #footer>
-        <button
-          type="button"
-          class="btn btn-secondary"
-          @click="modalVisible = false"
-        >
-          Close
-        </button>
-        <button
-          v-if="eventForm.id"
-          class="btn btn-danger"
-          @click="handleDeleteEvent"
-        >
-          Delete
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          @click="saveEvent"
-        >
-          Save
-        </button>
-      </template>
-    </Modal>
+      :event="currentEvent"
+      @save="saveEvent"
+      @delete="deleteEvent"
+    />
   </div>
 </template>
 

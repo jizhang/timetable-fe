@@ -33,7 +33,7 @@ export default defineStore('event', () => {
         id: payload.id,
       })
     } else {
-      const item = _.find(events.value, ['id', payload.id]) as Event
+      const item = _.find(events.value, ['id', event.id]) as Event
       _.assign(item, {
         categoryId: event.categoryId,
         title: event.title,
