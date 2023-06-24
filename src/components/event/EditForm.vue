@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from 'vue'
 import _ from 'lodash'
+import { useVuelidate } from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
 import type { Event } from '@/openapi'
 import useEventStore from '@/stores/event'
 import Modal from '@/components/Modal.vue'
@@ -31,11 +33,22 @@ watch(props.event, (event) => {
     categoryId: String(event.categoryId),
     title: event.title,
   })
+  v$.value.$reset()
 })
+
+const rules = {
+  categoryId: { required },
+  title: { required },
+}
+
+const v$ = useVuelidate(rules, eventForm)
 
 const eventStore = useEventStore()
 
-function saveEvent() {
+async function saveEvent() {
+  const isFormCorrect = await v$.value.$validate()
+  if (!isFormCorrect) return
+
   emit('save', {
     ...props.event,
     categoryId: _.toInteger(eventForm.categoryId),
@@ -60,8 +73,9 @@ function deleteEvent() {
         <label class="col-sm-2 col-form-label">Category:</label>
         <div class="col-sm-10">
           <select
-            v-model="eventForm.categoryId"
+            v-model="v$.categoryId.$model"
             class="form-select"
+            :class="{ 'is-invalid': v$.categoryId.$error }"
           >
             <option
               v-for="category in eventStore.categories"
@@ -75,10 +89,17 @@ function deleteEvent() {
       </div>
       <div class="mb-3">
         <textarea
-          v-model="eventForm.title"
+          v-model="v$.title.$model"
           class="form-control"
+          :class="{ 'is-invalid': v$.title.$error }"
           :rows="5"
         />
+        <div
+          v-if="v$.title.$error"
+          class="invalid-feedback"
+        >
+          {{ v$.title.$errors[0].$message }}
+        </div>
       </div>
     </form>
     <template #footer>
