@@ -98,14 +98,14 @@ onUnmounted(() => {
 // Event
 const modalVisible = ref(false)
 
-const defaultEvent = {
-  id: undefined as number | undefined,
+const defaultEvent: Event = {
+  id: undefined,
   categoryId: 1,
   title: '',
   start: new Date(),
   end: new Date(),
 }
-const currentEvent = reactive(_.clone(defaultEvent))
+const currentEvent = reactive({ ...defaultEvent })
 
 function saveEvent(event: Event) {
   eventStore.saveEvent(event).then(() => {
@@ -114,13 +114,14 @@ function saveEvent(event: Event) {
 }
 
 function updateCurrentEvent(event: CalendarEvent) {
-  _.assign(currentEvent, {
+  const input: Event = {
     id: _.toInteger(event.id),
     categoryId: event.extendedProps.categoryId,
     title: event.title,
     start: event.start || new Date(),
     end: event.end || new Date(),
-  } as Event)
+  }
+  _.assign(currentEvent, input)
 }
 
 function deleteEvent(id: number) {
