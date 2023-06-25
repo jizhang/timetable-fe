@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import _ from 'lodash'
+import dayjs from 'dayjs'
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
@@ -10,6 +12,19 @@ import { commonApi } from '@/common/api'
 import useEventStore from '@/stores/event'
 import EditForm from '@/components/event/EditForm.vue'
 import Note from '@/components/Note.vue'
+
+const DATE_FORMAT = 'YYYY-MM-DD'
+
+const router = useRouter()
+const route = useRoute()
+
+let initialDate = dayjs().format(DATE_FORMAT)
+if (route.query.start) {
+  const dt = dayjs(String(route.query.start), DATE_FORMAT, true)
+  if (dt.isValid()) {
+    initialDate = dt.format(DATE_FORMAT)
+  }
+}
 
 // Utilities
 function calculateCalendarHeight() {
@@ -39,6 +54,7 @@ const options = computed<CalendarOptions>(() => {
     eventConstraint,
     firstDay: 1,
     height: calculateCalendarHeight(),
+    initialDate,
     nowIndicator: true,
     plugins: [timeGridPlugin, interactionPlugin],
     scrollTime: '08:00:00',
@@ -49,6 +65,11 @@ const options = computed<CalendarOptions>(() => {
 
     datesSet({ start, end }) {
       eventStore.getEvents(start, end)
+      router.replace({
+        query: {
+          start: dayjs(start).format(DATE_FORMAT),
+        },
+      })
     },
 
     select({ start, end }) {
