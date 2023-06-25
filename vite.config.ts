@@ -1,4 +1,5 @@
-import { defineConfig, UserConfig } from 'vite'
+import type { UserConfig } from 'vite'
+import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { viteMockServe } from 'vite-plugin-mock'
 import { fileURLToPath, URL } from 'url'
@@ -20,6 +21,19 @@ export default defineConfig(({ command }) => {
         prodEnabled: false,
       }),
     ],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'fullcalendar': [
+              '@fullcalendar/core',
+              '@fullcalendar/interaction',
+              '@fullcalendar/timegrid',
+            ],
+          },
+        },
+      },
+    },
   }
 
   if (!mockEnabled) {
