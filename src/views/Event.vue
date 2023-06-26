@@ -170,18 +170,18 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div>
-    <div class="calendar">
+  <div class="d-flex my-3">
+    <div class="calendar mx-3">
       <FullCalendar
         ref="calendarRef"
         :options="options"
       />
     </div>
 
-    <div class="note">
+    <div class="note pe-3">
       <Note />
 
-      <div style="margin-top: 10px;">
+      <div class="mt-3">
         <ul class="list-group">
           <li
             v-for="item in eventStore.categoryDurations"
@@ -206,7 +206,7 @@ onUnmounted(() => {
 
 <style lang="scss">
 .calendar {
-  width: 1000px;
+  flex: 0 0 1000px;
 
   .fc-col-header-cell {
     a {
@@ -234,8 +234,6 @@ onUnmounted(() => {
 }
 
 .note {
-  position: absolute;
-  left: 1024px;
-  top: 10px;
+  flex: 0 0 250px;
 }
 </style>
