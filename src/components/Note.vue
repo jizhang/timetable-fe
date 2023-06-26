@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 import { noteApi } from '@/common/api'
+
+const router = useRouter()
 
 const isLoading = ref(false)
 const created = ref('')
@@ -48,7 +51,8 @@ const handleChangeContent = _.debounce(saveNote, 5000)
           <li>
             <a
               class="dropdown-item"
-              href="#"
+              href="javascript:;"
+              @click="router.push('/ebbinghaus')"
             >
               Ebbinghaus
             </a>
