@@ -6,9 +6,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
   <router-view />
 </template>
 
-<style>
+<style lang="scss">
 #app {
   font-size: 14px;
-  padding: 10px;
 }
 </style>

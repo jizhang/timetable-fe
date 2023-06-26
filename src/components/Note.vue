@@ -32,8 +32,29 @@ const handleChangeContent = _.debounce(saveNote, 5000)
 
 <template>
   <form @submit="handleSubmit">
-    <div class="title">
-      Note
+    <div class="d-flex">
+      <div class="title flex-grow-1">
+        Note
+      </div>
+      <div class="dropdown">
+        <button
+          class="btn btn-secondary btn-sm dropdown-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+        >
+          Goto
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a
+              class="dropdown-item"
+              href="#"
+            >
+              Ebbinghaus
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
     <textarea
       v-model="noteForm.content"
@@ -58,10 +79,8 @@ const handleChangeContent = _.debounce(saveNote, 5000)
   </form>
 </template>
 
-<style scoped>
-* {
-  --vertical-gap: 10px;
-}
+<style scoped lang="scss">
+$vertical-gap: 1rem;
 
 .title {
   font-size: 20px;
@@ -71,15 +90,15 @@ const handleChangeContent = _.debounce(saveNote, 5000)
 
 .content {
   display: block;
-  width: 240px;
+  width: 100%;
   height: 560px;
-  margin: var(--vertical-gap) 0;
+  margin: $vertical-gap 0;
   font-size: 12px;
 }
 
 .saved {
   text-align: center;
-  margin-top: var(--vertical-gap);
+  margin-top: $vertical-gap;
   padding: 8px;
 }
 </style>
