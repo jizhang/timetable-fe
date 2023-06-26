@@ -24,9 +24,17 @@ while (current.isBefore(nextMonth)) {
 <template>
   <div class="m-3">
     <div class="d-flex">
-      <h1 class="me-auto">Ebbinghaus</h1>
+      <h1 class="me-auto">
+        Ebbinghaus
+      </h1>
       <div>
-        <button type="button" class="btn btn-secondary" @click="router.push('/')">Back</button>
+        <button
+          type="button"
+          class="btn btn-secondary"
+          @click="router.push('/')"
+        >
+          Back
+        </button>
       </div>
     </div>
     <table class="table">
