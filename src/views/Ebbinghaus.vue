@@ -3,22 +3,26 @@ import { useRouter } from 'vue-router'
 import _ from 'lodash'
 import dayjs from 'dayjs'
 
+const DATE_FORMAT = 'YYYY-MM-DD'
+
 const router = useRouter()
 
 // https://traverse.link/spaced-repetition/the-optimal-spaced-repetition-schedule
 const REPETITIONS = [0, 1, 6, 14, 30, 66, 150, 360]
 
 const data: string[][] = []
-let current = dayjs().startOf('month')
-const nextMonth = current.add(1, 'month')
+let current = dayjs().subtract(6, 'day')
+const end = dayjs().add(7, 'day')
 
-while (current.isBefore(nextMonth)) {
+while (current.isBefore(end)) {
   const row = _.map(REPETITIONS, days => {
-    return current.subtract(days, 'day').format('YYYY-MM-DD')
+    return current.subtract(days, 'day').format(DATE_FORMAT)
   })
   data.push(row)
   current = current.add(1, 'day')
 }
+
+const today = dayjs().format(DATE_FORMAT)
 </script>
 
 <template>
@@ -37,7 +41,7 @@ while (current.isBefore(nextMonth)) {
         </button>
       </div>
     </div>
-    <table class="table">
+    <table class="table text-nowrap">
       <thead>
         <tr>
           <th>Impression</th>
@@ -54,6 +58,7 @@ while (current.isBefore(nextMonth)) {
         <tr
           v-for="row in data"
           :key="row[0]"
+          :class="{ 'table-active': row[0] === today }"
         >
           <td
             v-for="col in row"
