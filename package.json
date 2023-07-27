@@ -27,7 +27,7 @@
     "vue-router": "^4.2.1"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.5.1",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@types/bootstrap": "^5.1.12",
     "@types/lodash": "^4.14.194",
     "@types/node": "^18.11.0",
@@ -47,9 +47,5 @@
     "vite": "^4.3.9",
     "vite-plugin-mock": "^2.9.8",
     "vue-tsc": "^1.6.5"
-  },
-  "resolutions": {
-    "@nestjs/common": "8.4.7",
-    "@nestjs/core": "8.4.7"
   }
 }
