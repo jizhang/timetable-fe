@@ -10,9 +10,12 @@ const router = useRouter()
 // https://traverse.link/spaced-repetition/the-optimal-spaced-repetition-schedule
 const REPETITIONS = [0, 1, 6, 14, 30, 66, 150, 360]
 
+const now = dayjs()
+const today = now.format(DATE_FORMAT)
+
 const data: string[][] = []
-let current = dayjs().subtract(6, 'day')
-const end = dayjs().add(7, 'day')
+let current = now.subtract(6, 'day')
+const end = now.add(7, 'day')
 
 while (current.isBefore(end)) {
   const row = _.map(REPETITIONS, days => {
@@ -21,8 +24,6 @@ while (current.isBefore(end)) {
   data.push(row)
   current = current.add(1, 'day')
 }
-
-const today = dayjs().format(DATE_FORMAT)
 </script>
 
 <template>
