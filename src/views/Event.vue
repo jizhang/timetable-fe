@@ -8,7 +8,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi } from '@fullcalendar/core'
 import type { Event } from '@/openapi'
-import { commonApi } from '@/common/api'
+import { ping } from '@/services/common'
 import useEventStore from '@/stores/event'
 import EditForm from '@/components/event/EditForm.vue'
 import Note from '@/components/Note.vue'
@@ -155,7 +155,7 @@ let pingHandler: NodeJS.Timer
 
 onMounted(() => {
   pingHandler = setInterval(() => {
-    commonApi.ping().catch(() => {
+    ping().catch(() => {
       clearInterval(pingHandler)
       if (confirm('Ping error, reload?')) {
         location.reload()
