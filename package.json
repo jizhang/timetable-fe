@@ -8,8 +8,7 @@
     "lint": "eslint --ext .ts,.vue --fix . && stylelint --fix **/*.vue && vue-tsc --noEmit",
     "lint:ci": "eslint --ext .ts,.vue . && stylelint **/*.vue && vue-tsc --noEmit",
     "build": "vite build",
-    "preview": "vite preview",
-    "gen": "openapi-generator-cli generate"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.4",
@@ -28,7 +27,6 @@
     "vue-router": "^4.2.1"
   },
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@types/bootstrap": "^5.1.12",
     "@types/lodash": "^4.14.194",
     "@types/node": "^18.11.0",
