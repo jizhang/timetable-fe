@@ -3,7 +3,7 @@ import { computed, reactive, watch } from 'vue'
 import _ from 'lodash'
 import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
-import type { Event } from '@/openapi'
+import type { Event } from '@/services/event'
 import useEventStore from '@/stores/event'
 import Modal from '@/components/Modal.vue'
 

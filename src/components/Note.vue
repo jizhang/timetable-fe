@@ -3,7 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import _ from 'lodash'
 import dayjs from 'dayjs'
-import { noteApi } from '@/common/api'
+import * as service from '@/services/note'
 
 const router = useRouter()
 
@@ -14,7 +14,7 @@ const noteForm = reactive({
 })
 
 onMounted(() => {
-  noteApi.getNoteContent().then((response) => {
+  service.getNote().then(response => {
     noteForm.content = response.content || ''
   })
 })
@@ -25,7 +25,7 @@ function handleSubmit(event: Event) {
 }
 
 function saveNote() {
-  noteApi.saveNote({ noteForm }).then((response) => {
+  service.saveNote(noteForm).then(response => {
     created.value = dayjs(response.created).format('YYYY-MM-DD HH:mm:ss')
   })
 }

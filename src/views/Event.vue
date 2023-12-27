@@ -7,8 +7,8 @@ import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { EventApi as CalendarEvent, FormatterInput, CalendarOptions, CalendarApi } from '@fullcalendar/core'
-import type { Event } from '@/openapi'
-import { commonApi } from '@/common/api'
+import type { Event } from '@/services/event'
+import { ping } from '@/services/common'
 import useEventStore from '@/stores/event'
 import EditForm from '@/components/event/EditForm.vue'
 import Note from '@/components/Note.vue'
@@ -29,6 +29,10 @@ if (route.query.start) {
 // Utilities
 function calculateCalendarHeight() {
   return window.innerHeight - 50
+}
+
+function toISOString(date: Date | null) {
+  return (date || new Date()).toISOString()
 }
 
 const timeFormat: FormatterInput = {
@@ -123,8 +127,8 @@ const defaultEvent: Event = {
   id: undefined,
   categoryId: 1,
   title: '',
-  start: new Date(),
-  end: new Date(),
+  start: toISOString(null),
+  end: toISOString(null),
 }
 const currentEvent = reactive({ ...defaultEvent })
 
@@ -139,8 +143,8 @@ function updateCurrentEvent(event: CalendarEvent) {
     id: _.toInteger(event.id),
     categoryId: event.extendedProps.categoryId,
     title: event.title,
-    start: event.start || new Date(),
-    end: event.end || new Date(),
+    start: toISOString(event.start),
+    end: toISOString(event.end),
   }
   _.assign(currentEvent, input)
 }
@@ -155,7 +159,7 @@ let pingHandler: NodeJS.Timer
 
 onMounted(() => {
   pingHandler = setInterval(() => {
-    commonApi.ping().catch(() => {
+    ping().catch(() => {
       clearInterval(pingHandler)
       if (confirm('Ping error, reload?')) {
         location.reload()

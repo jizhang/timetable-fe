@@ -23,15 +23,15 @@ function getEvenList() {
       id: 1,
       categoryId: 1,
       title: 'abcdefghijklm',
-      start: now.format('YYYY-MM-DD 09:00:00'),
-      end: now.format('YYYY-MM-DD 10:00:00'),
+      start: now.format('YYYY-MM-DD[T]09:00:00'),
+      end: now.format('YYYY-MM-DD[T]10:00:00'),
     },
     {
       id: 2,
       categoryId: 2,
       title: 'nopqrstuvwxyz',
-      start: now.format('YYYY-MM-DD 10:30:00'),
-      end: now.format('YYYY-MM-DD 11:00:00'),
+      start: now.format('YYYY-MM-DD[T]10:30:00'),
+      end: now.format('YYYY-MM-DD[T]11:00:00'),
     },
   ]
 

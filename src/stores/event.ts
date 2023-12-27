@@ -2,8 +2,8 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import _ from 'lodash'
 import dayjs from 'dayjs'
-import type { Category, Event } from '@/openapi'
-import { eventApi } from '@/common/api'
+import type { Category, Event } from '@/services/event'
+import * as service from '@/services/event'
 
 export default defineStore('event', () => {
   const categories = ref<Category[]>([])
@@ -11,7 +11,7 @@ export default defineStore('event', () => {
 
   async function getCategories() {
     if (categoriesLoaded.value) return
-    const payload = await eventApi.getEventCategories()
+    const payload = await service.getCategories()
     categories.value = payload.categories || []
     categoriesLoaded.value = true
   }
@@ -20,12 +20,12 @@ export default defineStore('event', () => {
 
   async function getEvents(start: Date, end: Date) {
     await getCategories()
-    const payload = await eventApi.getEventList({ start, end })
+    const payload = await service.getEvents(start, end)
     events.value = payload.events || []
   }
 
   async function saveEvent(event: Event) {
-    const payload = await eventApi.saveEvent({ event })
+    const payload = await service.saveEvent(event)
 
     if (!event.id) {
       events.value.push({
@@ -44,8 +44,7 @@ export default defineStore('event', () => {
   }
 
   async function deleteEvent(id: number) {
-    const eventId = { id }
-    const payload = await eventApi.deleteEvent({ eventId })
+    const payload = await service.deleteEvent(id)
     _.remove(events.value, ['id', payload.id])
   }
 

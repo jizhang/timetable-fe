@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { userApi } from '@/common/api'
+import * as service from '@/services/user'
 
 const router = useRouter()
 
@@ -13,7 +13,7 @@ const loginForm = reactive({
 function handleSubmit(event: Event) {
   event.preventDefault()
 
-  userApi.userLogin({ loginForm }).then(() => {
+  service.login(loginForm).then(() => {
     router.push('/')
   })
 }
