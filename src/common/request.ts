@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import qs from 'qs'
 import { routerHolder } from '@/common/utils'
+import { showAlert } from './alert'
 
 class RequestError {
   constructor(public code: number, public payload: null | string | object) {}
@@ -13,7 +14,7 @@ export async function request(url: string, config?: RequestInit) {
   try {
     response = await fetch(url, config)
   } catch (error) {
-    alert(String(error)) // TODO Use toasts
+    showAlert(String(error))
     throw new RequestError(0, {
       message: String(error),
       error,
@@ -30,7 +31,7 @@ export async function request(url: string, config?: RequestInit) {
     const payload = await response.json()
     // global toast
     if (payload.code === 400) {
-      alert(payload.message)
+      showAlert(payload.message)
     }
     // raise error for downstream processing
     throw new RequestError(payload.code, payload)
@@ -43,7 +44,7 @@ export async function request(url: string, config?: RequestInit) {
   }
 
   // other error
-  alert(`${response.status} ${response.statusText}`)
+  showAlert(`${response.status} ${response.statusText}`)
   throw new RequestError(response.status, response.statusText)
 }
 
