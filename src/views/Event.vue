@@ -12,6 +12,7 @@ import { ping } from '@/services/common'
 import useEventStore from '@/stores/event'
 import EditForm from '@/components/event/EditForm.vue'
 import Note from '@/components/Note.vue'
+import Modal from '@/components/Modal.vue'
 
 const DATE_FORMAT = 'YYYY-MM-DD'
 
@@ -155,15 +156,19 @@ function deleteEvent(id: number) {
   })
 }
 
+// Ping
+const pingModalVisible = ref(false)
 let pingHandler: NodeJS.Timer
+
+function reload() {
+  location.reload()
+}
 
 onMounted(() => {
   pingHandler = setInterval(() => {
     ping().catch(() => {
       clearInterval(pingHandler)
-      if (confirm('Ping error, reload?')) {
-        location.reload()
-      }
+      pingModalVisible.value = true
     })
   }, 30_000)
 })
@@ -205,6 +210,30 @@ onUnmounted(() => {
       @save="saveEvent"
       @delete="deleteEvent"
     />
+
+    <Modal
+      v-model="pingModalVisible"
+      title="Timetable"
+    >
+      Ping error, reload?
+
+      <template #footer>
+        <button
+          type="button"
+          class="btn"
+          @click="pingModalVisible = false"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          @click="reload()"
+        >
+          OK
+        </button>
+      </template>
+    </Modal>
   </div>
 </template>
 
