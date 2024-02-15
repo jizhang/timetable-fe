@@ -23,16 +23,21 @@ const modalVisible = computed({
   set: (value) => emit('update:modelValue', value),
 })
 
-const eventForm = reactive({
+const defaultForm = {
   categoryId: '',
   title: '',
-})
+}
+const eventForm = reactive({ ...defaultForm })
 
-watch(props.event, (event) => {
-  _.assign(eventForm, {
-    categoryId: String(event.categoryId),
-    title: event.title,
-  })
+watch(() => props.modelValue, (value) => {
+  if (value) {
+    _.assign(eventForm, {
+      categoryId: String(props.event.categoryId),
+      title: props.event.title,
+    })
+  } else {
+    _.assign(eventForm, defaultForm)
+  }
   v$.value.$reset()
 })
 
