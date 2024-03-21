@@ -55,7 +55,7 @@ while (current.isBefore(end)) {
           <th>7th Review</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody class="table-group-divider">
         <tr
           v-for="row in data"
           :key="row[0]"
