@@ -3,6 +3,7 @@ const path = require('path')
 const chokidar = require('chokidar')
 const glob = require('glob')
 const Router = require('routes')
+const bodyParser = require('body-parser')
 
 class MockMiddleware {
   constructor(mockPath) {
@@ -57,6 +58,8 @@ class MockMiddleware {
 const mockPlugin = () => ({
   name: 'mock-plugin',
   configureServer(server) {
+    server.middlewares.use(bodyParser.json())
+
     const { middleware } = new MockMiddleware('./mock')
     server.middlewares.use(middleware)
   },

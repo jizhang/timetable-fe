@@ -1,11 +1,11 @@
-import dayjs from 'dayjs'
-import { MockMethod } from 'vite-plugin-mock'
+const sendJson = require('send-data/json')
+const dayjs = require('dayjs')
 
 function randomInt() {
   return Math.floor(Math.random() * 1_000_000)
 }
 
-function getCategories() {
+function getCategories(req, res) {
   const categories = [
     {'id': 1, 'title': 'Work', 'color': '#3a87ad'},
     {'id': 2, 'title': 'Meeting', 'color': 'gray'},
@@ -13,10 +13,10 @@ function getCategories() {
     {'id': 4, 'title': 'Goofing-around', 'color': 'black'},
   ]
 
-  return { categories }
+  sendJson(req, res, { categories })
 }
 
-function getEvenList() {
+function getEvenList(req, res) {
   const now = dayjs()
   const events = [
     {
@@ -35,38 +35,23 @@ function getEvenList() {
     },
   ]
 
-  return { events }
+  sendJson(req, res, { events })
 }
 
-function saveEvent() {
-  return {
+function saveEvent(req, res) {
+  sendJson(req, res, {
     id: randomInt(),
-  }
+  })
 }
 
-function deleteEvent({ body }) {
-  return {
-    id: parseInt(body.id),
-  }
+function deleteEvent(req, res) {
+  const { id } = req.body
+  sendJson(req, res, { id })
 }
 
-export default [
-  {
-    url: '/api/event/categories',
-    response: getCategories,
-  },
-  {
-    url: '/api/event/list',
-    response: getEvenList,
-  },
-  {
-    url: '/api/event/save',
-    method: 'post',
-    response: saveEvent,
-  },
-  {
-    url: '/api/event/delete',
-    method: 'post',
-    response: deleteEvent,
-  },
-] as MockMethod[]
+module.exports = {
+  'GET /api/event/categories': getCategories,
+  'GET /api/event/list': getEvenList,
+  'POST /api/event/save': saveEvent,
+  'POST /api/event/delete': deleteEvent,
+}
