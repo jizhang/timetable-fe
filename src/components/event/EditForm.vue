@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import _ from 'lodash'
 import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
@@ -7,21 +7,18 @@ import type { Event } from '@/services/event'
 import useEventStore from '@/stores/event'
 import Modal from '@/components/Modal.vue'
 
+const model = defineModel<boolean>({ required: true })
+
 const props = defineProps<{
-  modelValue: boolean
   event: Event
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', modelValue: boolean): void
-  (e: 'save', event: Event): void
-  (e: 'delete', id: number): void
+  save: [event: Event]
+  delete: [id: number]
 }>()
 
-const modalVisible = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value),
-})
+const titleInput = ref<HTMLElement | null>(null)
 
 const defaultForm = {
   categoryId: '',
@@ -29,7 +26,7 @@ const defaultForm = {
 }
 const eventForm = reactive({ ...defaultForm })
 
-watch(() => props.modelValue, (value) => {
+watch(model, (value) => {
   if (value) {
     _.assign(eventForm, {
       categoryId: String(props.event.categoryId),
@@ -70,8 +67,9 @@ function deleteEvent() {
 
 <template>
   <Modal
-    v-model="modalVisible"
+    v-model="model"
     :title="`${event.id ? 'Edit' : 'New'} Event`"
+    @shown="titleInput?.focus()"
   >
     <form>
       <div class="row mb-3">
@@ -94,6 +92,7 @@ function deleteEvent() {
       </div>
       <div class="mb-3">
         <textarea
+          ref="titleInput"
           v-model="v$.title.$model"
           class="form-control"
           :class="{ 'is-invalid': v$.title.$error }"
@@ -111,7 +110,7 @@ function deleteEvent() {
       <button
         type="button"
         class="btn btn-secondary"
-        @click="modalVisible = false"
+        @click="model = false"
       >
         Close
       </button>
