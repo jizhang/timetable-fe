@@ -2,14 +2,14 @@
 import { ref, onMounted, watch } from 'vue'
 import { Modal } from 'bootstrap'
 
+const model = defineModel()
+
 const props = defineProps<{
-  modelValue: boolean
   title: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', modelValue: boolean): void
-  (e: 'shown'): void
+  shown: []
 }>()
 
 const modalRef = ref<HTMLElement | null>(null)
@@ -21,17 +21,13 @@ onMounted(() => {
   }
 })
 
-watch(() => props.modelValue, (modelValue) => {
+watch(model, (modelValue) => {
   if (modelValue) {
     modal.show()
   } else {
     modal.hide()
   }
 })
-
-function close() {
-  emit('update:modelValue', false)
-}
 </script>
 
 <template>
@@ -48,7 +44,7 @@ function close() {
           <button
             type="button"
             class="btn-close"
-            @click="close"
+            @click="model = false"
           />
         </div>
         <div class="modal-body">
