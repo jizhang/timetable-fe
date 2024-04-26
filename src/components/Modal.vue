@@ -2,7 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { Modal } from 'bootstrap'
 
-const model = defineModel()
+const model = defineModel<boolean>({ required: true })
 
 const props = defineProps<{
   title: string
@@ -21,8 +21,8 @@ onMounted(() => {
   }
 })
 
-watch(model, (modelValue) => {
-  if (modelValue) {
+watch(model, (value) => {
+  if (value) {
     modal.show()
   } else {
     modal.hide()

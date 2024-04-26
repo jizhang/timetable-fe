@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, watch, ref } from 'vue'
+import { reactive, watch, ref } from 'vue'
 import _ from 'lodash'
 import { useVuelidate } from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
@@ -7,7 +7,7 @@ import type { Event } from '@/services/event'
 import useEventStore from '@/stores/event'
 import Modal from '@/components/Modal.vue'
 
-const model = defineModel()
+const model = defineModel<boolean>({ required: true })
 
 const props = defineProps<{
   event: Event
