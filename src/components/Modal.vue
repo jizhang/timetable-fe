@@ -9,6 +9,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:modelValue', modelValue: boolean): void
+  (e: 'shown'): void
 }>()
 
 const modalRef = ref<HTMLElement | null>(null)
@@ -16,6 +17,7 @@ let modal: Modal
 onMounted(() => {
   if (modalRef.value) {
     modal = new Modal(modalRef.value, { backdrop: 'static' })
+    modalRef.value.addEventListener('shown.bs.modal', () => emit('shown'))
   }
 })
 
