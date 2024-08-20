@@ -5,8 +5,8 @@
   "scripts": {
     "start": "vite",
     "start:proxy": "cross-env MOCK=none vite",
-    "lint": "eslint --ext .ts,.vue --fix . && stylelint --fix **/*.vue && vue-tsc --noEmit",
-    "lint:ci": "eslint --ext .ts,.vue . && stylelint **/*.vue && vue-tsc --noEmit",
+    "lint": "eslint --fix . && stylelint --fix **/*.vue && vue-tsc --noEmit",
+    "lint:ci": "eslint . && stylelint **/*.vue && vue-tsc --noEmit",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -28,18 +28,18 @@
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.9.0",
     "@types/bootstrap": "^5.1.12",
+    "@types/eslint__js": "^8.42.3",
     "@types/lodash": "^4.14.194",
     "@types/node": "^18.11.0",
     "@types/qs": "^6.9.11",
-    "@typescript-eslint/eslint-plugin": "^5.60.0",
-    "@typescript-eslint/parser": "^5.60.0",
     "@vitejs/plugin-vue": "^4.6.2",
     "body-parser": "^1.20.2",
     "chokidar": "^3.6.0",
     "cross-env": "^7.0.3",
-    "eslint": "^8.44.0",
-    "eslint-plugin-vue": "^9.15.0",
+    "eslint": "^9.9.0",
+    "eslint-plugin-vue": "^9.27.0",
     "postcss-html": "^1.5.0",
     "routes": "^2.1.0",
     "sass": "^1.63.6",
@@ -47,7 +47,8 @@
     "stylelint": "^15.10.1",
     "stylelint-config-recommended-scss": "^12.0.0",
     "stylelint-config-recommended-vue": "^1.4.0",
-    "typescript": "^4.9.5",
+    "typescript": "^5.5.4",
+    "typescript-eslint": "^8.2.0",
     "vite": "^4.5.3",
     "vue-tsc": "^2.0.14"
   }
