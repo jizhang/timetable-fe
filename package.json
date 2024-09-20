@@ -35,7 +35,7 @@
     "@types/node": "^18.11.0",
     "@types/qs": "^6.9.11",
     "@vitejs/plugin-vue": "^5.1.2",
-    "body-parser": "^1.20.2",
+    "body-parser": "^1.20.3",
     "chokidar": "^3.6.0",
     "cross-env": "^7.0.3",
     "eslint": "^9.9.0",
