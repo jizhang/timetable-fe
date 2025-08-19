@@ -158,7 +158,7 @@ function deleteEvent(id: number) {
 
 // Ping
 const pingModalVisible = ref(false)
-let pingHandler: NodeJS.Timer
+let pingHandler: NodeJS.Timeout
 
 function reload() {
   location.reload()
