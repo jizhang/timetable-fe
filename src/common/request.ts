@@ -12,7 +12,7 @@ export async function request(url: string, config?: RequestInit) {
 
   // fetch error
   try {
-    response = await fetch(url, config)
+    response = await fetch(import.meta.env.BASE_URL + url, config)
   } catch (error) {
     showAlert(String(error))
     throw new RequestError(0, {

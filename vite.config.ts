@@ -9,6 +9,7 @@ export default defineConfig(({ command }) => {
   const mockEnabled = command === 'serve' && process.env.MOCK !== 'none'
 
   const config: UserConfig = {
+    base: '/timetable',
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
