@@ -34,12 +34,13 @@ export default defineConfig(({ command }) => {
   }
 
   if (mockEnabled) {
-    config.plugins.push(mockPlugin())
+    config.plugins.push(mockPlugin())  // TODO Prefix
   } else {
     config.server = {
       proxy: {
-        '/api': {
+        [`${config.base}/api`]: {
           target: 'http://127.0.0.1:5001',
+          rewrite: path => path.replace(/^\/timetable/, '')
         },
       },
     }
